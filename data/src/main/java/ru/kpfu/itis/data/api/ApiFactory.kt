@@ -1,17 +1,20 @@
-package ru.kpfu.itis.carwash.api
+package ru.kpfu.itis.data.api.places
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.kpfu.itis.carwash.BuildConfig
+import ru.kpfu.itis.data.BuildConfig
+
+import ru.kpfu.itis.data.api.LoggingInterceptor
 
 
-object PlacesApiFactory {
+object ApiFactory {
 
     private const val QUERY_API_KEY = "key"
     private const val QUERY_LANG = "language"
+
     private val apiKeyInterceptor = Interceptor { chain ->
         val original = chain.request()
         original.url().newBuilder()

@@ -3,10 +3,13 @@ package ru.kpfu.itis.data
 import android.annotation.SuppressLint
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
 import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.kpfu.itis.domain.LocationRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
 
 class LocationRepositoryImpl(
     private val client: FusedLocationProviderClient
