@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.kpfu.itis.data.LocationRepositoryImpl
+import ru.kpfu.itis.data.repository.LocationRepositoryImpl
 import ru.kpfu.itis.data.api.places.Place
 import ru.kpfu.itis.data.api.places.PlacesService
 

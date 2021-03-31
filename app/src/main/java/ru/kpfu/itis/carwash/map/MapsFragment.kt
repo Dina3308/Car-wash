@@ -12,11 +12,13 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -26,9 +28,11 @@ import com.karumi.dexter.listener.single.PermissionListener
 import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.ViewModelFactory
 import ru.kpfu.itis.carwash.databinding.FragmentMapsBinding
-import ru.kpfu.itis.data.LocationRepositoryImpl
+import ru.kpfu.itis.data.repository.LocationRepositoryImpl
 import ru.kpfu.itis.data.api.places.ApiFactory
 import ru.kpfu.itis.data.api.places.Place
+import ru.kpfu.itis.data.repository.AuthRepositoryImpl
+import ru.kpfu.itis.domain.AuthInteractor
 
 class MapsFragment : Fragment(){
 
@@ -63,6 +67,9 @@ class MapsFragment : Fragment(){
         ApiFactory.placesService,
         LocationRepositoryImpl(
             client = LocationServices.getFusedLocationProviderClient(requireActivity())
+        ),
+        AuthInteractor(
+            AuthRepositoryImpl(FirebaseAuth.getInstance())
         )
     )
 

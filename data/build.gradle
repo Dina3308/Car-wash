@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
 }
 
 android {
@@ -35,9 +34,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    androidExtensions {
-        experimental = true
-    }
+
 }
 
 def retrofit = "2.9.0"
@@ -57,13 +54,16 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
-
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
-    implementation "com.karumi:dexter:5.0.0"
+    implementation 'com.google.firebase:firebase-auth-ktx:20.0.3'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     implementation "com.squareup.retrofit2:retrofit:${retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofit}"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.8'
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "62938305874",
+    "project_id": "car-wash-4bf54",
+    "storage_bucket": "car-wash-4bf54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62938305874:android:39a850c0f22ea79cfad68b",
+        "android_client_info": {
+          "package_name": "ru.kpfu.itis.carwash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62938305874-srlpsiao47dl7rgbkf19mjm4ecgoh4ud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvw_WwZ7uxAjGGFnyZi_Ykq_wXFzgAUzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62938305874-srlpsiao47dl7rgbkf19mjm4ecgoh4ud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

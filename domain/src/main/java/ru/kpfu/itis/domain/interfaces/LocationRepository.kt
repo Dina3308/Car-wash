@@ -1,4 +1,4 @@
-package ru.kpfu.itis.domain
+package ru.kpfu.itis.domain.interfaces
 
 import android.location.Location
 
