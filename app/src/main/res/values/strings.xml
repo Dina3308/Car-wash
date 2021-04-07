@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Car Wash</string>
+    <string name="registration">Регистрация</string>
+    <string name="helper_text">пароль должен содержать не менее 6 символов</string>
+    <string name="hint_password">Пароль</string>
+    <string name="hint_password_restart">Подтверждение пароля</string>
+    <string name="hint_email">Email</string>
+    <string name="sign_up_text">Зарегистрироваться</string>
+    <string name="sign_in"><font color="#0099FF">Войти</font>, если Вы уже зарегистрированы</string>
+    <string name="sign_in_text">Вход</string>
+    <string name="sign_up">Еще нет аккаунта? <font color="#0099FF">Зарегистрируйтесь</font></string>
+    <string name="sign_in_btn">Войти</string>
+    <string name="search_nav">Город</string>
+    <string name="settings">settings</string>
+    <string name="sign_out">Выйти</string>
 
 </resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyToolbar">
+        <attr name="showSearchView" format="boolean"/>
+        <attr name="showSettings" format="boolean"/>
+        <attr name="showSignOut" format="boolean"/>
+    </declare-styleable>
+</resources>

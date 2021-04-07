@@ -12,87 +12,88 @@
         android:layout_height="match_parent"
         tools:context=".auth.SignUpFragment">
 
+        <TextView
+            android:id="@+id/sign_up_tv"
+            style="@style/titleTextView"
+            android:text="@string/registration"
+            app:layout_constraintBottom_toTopOf="@+id/email"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            style="@style/TextInputLayout"
+            android:hint="@string/hint_email"
+            app:layout_constraintBottom_toTopOf="@+id/password"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sign_up_tv">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                style="@style/TextInputEditText"
                 android:autofillHints="no"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:textSize="18sp" />
+                android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/email"
-            app:layout_constraintStart_toStartOf="parent"
+            style="@style/PasswordTextInputLayout"
+            android:hint="@string/hint_password"
+            app:layout_constraintBottom_toTopOf="@+id/password_repeat"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/email">
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/password_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                style="@style/TextInputEditText"
                 android:autofillHints="no"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:textSize="18sp" />
+                android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_repeat"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/password"
-            app:layout_constraintStart_toStartOf="parent"
+            style="@style/PasswordTextInputLayout"
+            android:hint="@string/hint_password_restart"
+            app:layout_constraintBottom_toTopOf="@+id/register_btn"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password">
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/password_repeat_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                style="@style/TextInputEditText"
                 android:autofillHints="no"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:textSize="18sp" />
+                android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/register_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            style="@style/AppButton"
+            android:text="@string/sign_up_text"
+            android:theme="@style/ThemeOverlay.button"
+            app:layout_constraintBottom_toTopOf="@id/sign_in"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password_repeat" />
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone"
+        <TextView
+            android:id="@+id/sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_in"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/register_btn"/>
+
+        <include
+            android:id="@+id/progress_bar"
+            layout="@layout/progress_bar"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

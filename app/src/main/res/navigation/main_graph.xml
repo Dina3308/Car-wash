@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_graph"
-    app:startDestination="@id/signUpFragment2">
+    app:startDestination="@id/mapsFragment">
 
     <fragment
         android:id="@+id/mapsFragment"
@@ -11,4 +11,8 @@
         android:id="@+id/signUpFragment2"
         android:name="ru.kpfu.itis.carwash.auth.SignUpFragment"
         android:label="SignUpFragment" />
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ru.kpfu.itis.carwash.main.MainFragment"
+        android:label="MainFragment" />
 </navigation>

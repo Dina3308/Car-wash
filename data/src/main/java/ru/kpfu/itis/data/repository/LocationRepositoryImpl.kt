@@ -8,10 +8,9 @@ import ru.kpfu.itis.domain.interfaces.LocationRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-
 class LocationRepositoryImpl(
     private val client: FusedLocationProviderClient
-): LocationRepository {
+) : LocationRepository {
 
     @SuppressLint("MissingPermission")
     override suspend fun getUserLocation(): Location = suspendCancellableCoroutine { continuation ->
