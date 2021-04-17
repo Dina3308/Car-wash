@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="MyToolbar">
-        <attr name="showSearchView" format="boolean"/>
-        <attr name="showSettings" format="boolean"/>
-        <attr name="showSignOut" format="boolean"/>
+        <attr name="setLeftIcon" format="reference"/>
+        <attr name="setRight1Icon" format="reference"/>
+        <attr name="setRight2Icon" format="reference"/>
+        <attr name="setTitle" format="string"/>
     </declare-styleable>
 </resources>

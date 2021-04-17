@@ -28,6 +28,8 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'API_ENDPOINT', BASE_URL
         it.buildConfigField 'String', 'API_KEY', PLACES_API_KEY
+        it.buildConfigField 'String', 'API_ENDPOINT_WEATHER', BASE_URL_WEATHER
+        it.buildConfigField 'String', 'API_KEY_WEATHER', WEATHER_API_KEY
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -58,7 +60,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
-    implementation 'com.google.firebase:firebase-auth-ktx:20.0.3'
+    implementation 'com.google.firebase:firebase-auth-ktx:20.0.4'
+    implementation 'com.google.firebase:firebase-firestore-ktx:22.1.2'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     implementation "com.squareup.retrofit2:retrofit:${retrofit}"

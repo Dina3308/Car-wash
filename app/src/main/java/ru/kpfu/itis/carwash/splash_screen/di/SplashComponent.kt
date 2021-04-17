@@ -1,26 +1,26 @@
-package ru.kpfu.itis.carwash.auth.di
+package ru.kpfu.itis.carwash.splash_screen.di
 
 import androidx.fragment.app.Fragment
 import dagger.BindsInstance
 import dagger.Subcomponent
-import ru.kpfu.itis.carwash.auth.SignUpFragment
 import ru.kpfu.itis.carwash.di.ScreenScope
+import ru.kpfu.itis.carwash.splash_screen.SplashFragment
 
 @Subcomponent(
     modules = [
-        AuthModule::class
+        SplashModule::class
     ]
 )
 @ScreenScope
-interface SignUpComponent {
+interface SplashComponent {
 
     @Subcomponent.Factory
     interface Factory {
 
         fun create(
             @BindsInstance fragment: Fragment
-        ): SignUpComponent
+        ): SplashComponent
     }
 
-    fun inject(fragment: SignUpFragment)
+    fun inject(splashFragment: SplashFragment)
 }

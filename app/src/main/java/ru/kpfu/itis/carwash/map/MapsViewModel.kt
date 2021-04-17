@@ -9,9 +9,10 @@ import kotlinx.coroutines.launch
 import ru.kpfu.itis.carwash.map.model.CarWashMarker
 import ru.kpfu.itis.domain.MapInteractor
 import ru.kpfu.itis.domain.model.CarWash
+import javax.inject.Inject
 
-class MapsViewModel(
-    private val mapInteractor: MapInteractor
+class MapsViewModel @Inject constructor(
+    private val interactor: MapInteractor
 ) : ViewModel() {
 
     private val carWashes: MutableLiveData<Result<List<CarWashMarker>>> = MutableLiveData()
@@ -22,16 +23,17 @@ class MapsViewModel(
 
     fun showNearbyCarWashes() {
         viewModelScope.launch {
-            try {
-                mapInteractor.getUserLocation().also {
+            val userLocation = interactor.getUserLocation()
+            if (userLocation.isSuccess) {
+                userLocation.getOrNull()?.let {
                     location.value = Result.success(it)
                     carWashes.value = Result.success(
-                        mapInteractor.getNearbyCarWashes(it)
+                        interactor.getNearbyCarWashes(it)
                             .map(::mapCarWashToCarWashMarker)
                     )
                 }
-            } catch (throwable: Throwable) {
-                location.value = Result.failure(throwable)
+            } else {
+                userLocation.exceptionOrNull()?.let { location.value = Result.failure(it) }
             }
         }
     }

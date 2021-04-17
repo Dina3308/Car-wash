@@ -1,4 +1,4 @@
-package ru.kpfu.itis.carwash.auth.di
+package ru.kpfu.itis.carwash.splash_screen.di
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -6,23 +6,22 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import ru.kpfu.itis.carwash.auth.AuthViewModel
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
-import ru.kpfu.itis.carwash.map.MapsViewModel
+import ru.kpfu.itis.carwash.splash_screen.SplashViewModel
 import ru.kpfu.itis.domain.AuthInteractor
 
 @Module(includes = [ViewModelModule::class])
-class SignUpModule {
+class SplashModule {
 
     @Provides
     @IntoMap
-    @ViewModelKey(MapsViewModel::class)
+    @ViewModelKey(SplashViewModel::class)
     fun provideViewModel(
         interactor: AuthInteractor
-    ): ViewModel = AuthViewModel(interactor)
+    ): ViewModel = SplashViewModel(interactor)
 
     @Provides
-    fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): AuthViewModel =
-        ViewModelProvider(fragment, viewModelFactory).get(AuthViewModel::class.java)
+    fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): SplashViewModel =
+        ViewModelProvider(fragment, viewModelFactory).get(SplashViewModel::class.java)
 }

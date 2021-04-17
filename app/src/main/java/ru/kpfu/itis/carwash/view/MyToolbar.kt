@@ -1,54 +1,89 @@
 package ru.kpfu.itis.carwash.view
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
+import androidx.databinding.DataBindingUtil
 import ru.kpfu.itis.carwash.R
+import ru.kpfu.itis.carwash.databinding.CustomToolbarBinding
 
 class MyToolbar(
     context: Context,
     attrs: AttributeSet,
-) : Toolbar(context, attrs) {
+) : LinearLayout(context, attrs) {
 
-    private var searchView: Boolean
-    private var settings: Boolean
-    private var signOut: Boolean
+    private var leftIcon: Drawable? = null
+    private var right1Icon: Drawable? = null
+    private var right2Icon: Drawable? = null
+    private var title: String? = null
+    private val binding: CustomToolbarBinding
 
     init {
-        inflateMenu(R.menu.nav_menu)
-        setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
-        setTitleTextColor(ContextCompat.getColor(context, R.color.white))
         context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.MyToolbar,
             0,
             0
         ).apply {
-
             try {
-                searchView = getBoolean(R.styleable.MyToolbar_showSearchView, false)
-                settings = getBoolean(R.styleable.MyToolbar_showSettings, false)
-                signOut = getBoolean(R.styleable.MyToolbar_showSignOut, false)
+                binding = DataBindingUtil.inflate(
+                    LayoutInflater.from(context),
+                    R.layout.custom_toolbar,
+                    this@MyToolbar,
+                    true
+                )
+                leftIcon = getDrawable(R.styleable.MyToolbar_setLeftIcon)
+                right1Icon = getDrawable(R.styleable.MyToolbar_setRight1Icon)
+                right2Icon = getDrawable(R.styleable.MyToolbar_setRight2Icon)
+                title = getString(R.styleable.MyToolbar_setTitle)
 
-                setSettings(settings)
-                setSearchView(searchView)
-                setSignOut(signOut)
+                title?.let { setTitle(it) }
+                leftIcon?.let { setLeftIcon(it) }
+                right1Icon?.let { setRight1Icon(it) }
+                right2Icon?.let { setRight2Icon(it) }
             } finally {
                 recycle()
             }
         }
     }
 
-    fun setSettings(isShow: Boolean) {
-        menu.findItem(R.id.nav_setting).isVisible = isShow
+    fun setTitle(title: String) {
+        binding.title.text = title
     }
 
-    fun setSearchView(isShow: Boolean) {
-        menu.findItem(R.id.nav_search).isVisible = isShow
+    fun setLeftIcon(icon: Drawable) {
+        binding.leftIcon.run {
+            setImageDrawable(icon)
+            (layoutParams as LayoutParams).marginStart = 8
+        }
     }
 
-    fun setSignOut(isShow: Boolean) {
-        menu.findItem(R.id.nav_sign_out).isVisible = isShow
+    fun setRight1Icon(icon: Drawable) {
+        binding.right1Icon.setImageDrawable(icon)
+    }
+
+    fun setRight2Icon(icon: Drawable) {
+        binding.right2Icon.setImageDrawable(icon)
+    }
+
+    fun leftIconClickListener(itemClick: (View) -> Unit) {
+        binding.leftIcon.setOnClickListener {
+            it?.also(itemClick)
+        }
+    }
+
+    fun right1IconClickListener(itemClick: (View) -> Unit) {
+        binding.right1Icon.setOnClickListener {
+            it?.also(itemClick)
+        }
+    }
+
+    fun right2IconClickListener(itemClick: (View) -> Unit) {
+        binding.right2Icon.setOnClickListener {
+            it?.also(itemClick)
+        }
     }
 }

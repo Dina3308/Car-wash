@@ -3,10 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -58,7 +54,7 @@
             android:id="@+id/password_repeat"
             style="@style/PasswordTextInputLayout"
             android:hint="@string/hint_password_restart"
-            app:layout_constraintBottom_toTopOf="@+id/register_btn"
+            app:layout_constraintBottom_toTopOf="@+id/search_city"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password">
@@ -70,6 +66,25 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_city"
+            style="@style/TextInputLayout"
+            android:hint="@string/hint_city"
+            app:layout_constraintBottom_toTopOf="@+id/register_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password_repeat">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/search_city_edit"
+                android:focusable="false"
+                android:drawableStart="@drawable/ic_search_grey"
+                android:cursorVisible="false"
+                style="@style/TextInputEditText"
+                android:autofillHints="no"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/register_btn"
             style="@style/AppButton"
@@ -78,7 +93,7 @@
             app:layout_constraintBottom_toTopOf="@id/sign_in"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password_repeat" />
+            app:layout_constraintTop_toBottomOf="@+id/search_city" />
 
         <TextView
             android:id="@+id/sign_in"
@@ -91,9 +106,15 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/register_btn"/>
 
-        <include
+        <ProgressBar
             android:id="@+id/progress_bar"
-            layout="@layout/progress_bar"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

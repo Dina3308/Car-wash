@@ -9,7 +9,11 @@ class MapInteractor(
     private val locationRepository: LocationRepository,
     private val carWashesRepository: CarWashesRepository
 ) {
-    suspend fun getUserLocation(): Location = locationRepository.getUserLocation()
+    suspend fun getUserLocation(): Result<Location> {
+        return runCatching {
+            locationRepository.getUserLocation()
+        }
+    }
 
     suspend fun getNearbyCarWashes(myLocation: Location): List<CarWash> {
         return carWashesRepository.getNearbyCarWashes(myLocation.latitude, myLocation.longitude)

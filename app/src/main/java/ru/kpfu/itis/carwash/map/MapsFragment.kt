@@ -20,7 +20,6 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import ru.kpfu.itis.carwash.App
-import ru.kpfu.itis.carwash.MainActivity
 import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.databinding.FragmentMapsBinding
 import ru.kpfu.itis.carwash.map.model.CarWashMarker
