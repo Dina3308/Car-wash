@@ -36,8 +36,9 @@ class AppModule {
     @Provides
     @Singleton
     fun provideFireStoreInteractor(
-        fireStoreRepository: FireStoreRepository
-    ): FireStoreInteractor = FireStoreInteractor(fireStoreRepository)
+        fireStoreRepository: FireStoreRepository,
+        authRepository: AuthRepository
+    ): FireStoreInteractor = FireStoreInteractor(fireStoreRepository, authRepository)
 
     @Provides
     @Singleton

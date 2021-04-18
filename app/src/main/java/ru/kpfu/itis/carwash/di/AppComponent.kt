@@ -5,8 +5,9 @@ import dagger.BindsInstance
 import dagger.Component
 import ru.kpfu.itis.carwash.auth.di.SignInComponent
 import ru.kpfu.itis.carwash.auth.di.SignUpComponent
-import ru.kpfu.itis.carwash.home.di.HomeComponent
+import ru.kpfu.itis.carwash.profile.di.ProfileComponent
 import ru.kpfu.itis.carwash.map.di.MapsComponent
+import ru.kpfu.itis.carwash.setting.di.SettingComponent
 import ru.kpfu.itis.carwash.splash_screen.di.SplashComponent
 import ru.kpfu.itis.data.di.NetworkModule
 import ru.kpfu.itis.data.di.RepoModule
@@ -41,5 +42,7 @@ interface AppComponent {
 
     fun splashComponentFactory(): SplashComponent.Factory
 
-    fun homeComponentFactory(): HomeComponent.Factory
+    fun homeComponentFactory(): ProfileComponent.Factory
+
+    fun settingComponentFactory(): SettingComponent.Factory
 }

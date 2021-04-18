@@ -1,25 +1,25 @@
-package ru.kpfu.itis.carwash.home.di
+package ru.kpfu.itis.carwash.profile.di
 
 import androidx.fragment.app.Fragment
 import dagger.BindsInstance
 import dagger.Subcomponent
 import ru.kpfu.itis.carwash.di.ScreenScope
-import ru.kpfu.itis.carwash.home.HomeFragment
+import ru.kpfu.itis.carwash.profile.ProfileFragment
 
 @Subcomponent(
     modules = [
-        HomeModule::class
+        ProfileModule::class
     ]
 )
 @ScreenScope
-interface HomeComponent {
+interface ProfileComponent {
     @Subcomponent.Factory
     interface Factory {
 
         fun create(
             @BindsInstance fragment: Fragment
-        ): HomeComponent
+        ): ProfileComponent
     }
 
-    fun inject(homeFragment: HomeFragment)
+    fun inject(homeFragment: ProfileFragment)
 }

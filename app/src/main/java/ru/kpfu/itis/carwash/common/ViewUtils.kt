@@ -7,7 +7,10 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
     val spannableString = SpannableString(this.text)
@@ -29,4 +32,8 @@ fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
     }
     this.movementMethod = LinkMovementMethod.getInstance()
     this.setText(spannableString, TextView.BufferType.SPANNABLE)
+}
+
+fun EditText.dateFormatter(date: Date){
+    this.setText(SimpleDateFormat("MM/dd/yyyy", Locale.forLanguageTag("ru")).format(date))
 }
