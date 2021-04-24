@@ -15,5 +15,8 @@
     <string name="sign_out">Выйти</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hint_city">Выбор города</string>
+    <string name="temp_tv">%d°C</string>
+    <string name="max_min_tv">%d°C / %d°C</string>
+    <string name="date_tv">Последний раз мыли машину:</string>
     <string name="choose_city">Ваш город:  %s</string>
 </resources>

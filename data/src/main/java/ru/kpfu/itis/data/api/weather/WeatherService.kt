@@ -6,12 +6,15 @@ import retrofit2.http.Query
 interface WeatherService {
 
     @GET("weather")
-    suspend fun getWeatherByName(
-        @Query("q") cityName: String
-    ) // : WeatherResponse
+    suspend fun getWeatherByCoord(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double
+    ) : WeatherResponse
 
-    @GET("weather")
-    suspend fun getWeatherById(
-        @Query("id") cityId: Int
-    ) // : WeatherResponse
+    @GET("onecall?exclude=hourly,minutely,alerts")
+    suspend fun getForecastsWeather(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+    ) : ForecastsWeatherResponse
+
 }

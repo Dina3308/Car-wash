@@ -1,14 +1,18 @@
 package ru.kpfu.itis.carwash.di
 
 import android.content.Context
+import com.squareup.inject.assisted.dagger2.AssistedModule
 import dagger.BindsInstance
 import dagger.Component
+import dagger.Module
 import ru.kpfu.itis.carwash.auth.di.SignInComponent
 import ru.kpfu.itis.carwash.auth.di.SignUpComponent
 import ru.kpfu.itis.carwash.profile.di.ProfileComponent
 import ru.kpfu.itis.carwash.map.di.MapsComponent
 import ru.kpfu.itis.carwash.setting.di.SettingComponent
 import ru.kpfu.itis.carwash.splash_screen.di.SplashComponent
+import ru.kpfu.itis.carwash.workManager.di.CarWashWorkerFactory
+import ru.kpfu.itis.carwash.workManager.di.CarWashWorkerModule
 import ru.kpfu.itis.data.di.NetworkModule
 import ru.kpfu.itis.data.di.RepoModule
 import ru.kpfu.itis.data.di.ServiceModule
@@ -20,7 +24,8 @@ import javax.inject.Singleton
         AppModule::class,
         NetworkModule::class,
         RepoModule::class,
-        ServiceModule::class
+        ServiceModule::class,
+        CarWashWorkerModule::class
     ]
 )
 interface AppComponent {
@@ -45,4 +50,7 @@ interface AppComponent {
     fun homeComponentFactory(): ProfileComponent.Factory
 
     fun settingComponentFactory(): SettingComponent.Factory
+
+    fun factory(): CarWashWorkerFactory
 }
+

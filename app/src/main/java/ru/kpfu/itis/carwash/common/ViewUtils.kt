@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
@@ -36,4 +37,9 @@ fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
 
 fun EditText.dateFormatter(date: Date){
     this.setText(SimpleDateFormat("MM/dd/yyyy", Locale.forLanguageTag("ru")).format(date))
+}
+
+fun TextView.setDate(date: Date){
+    val format = SimpleDateFormat("EE, dd MMMM", Locale.forLanguageTag("ru"))
+    this.text = format.format(date)
 }

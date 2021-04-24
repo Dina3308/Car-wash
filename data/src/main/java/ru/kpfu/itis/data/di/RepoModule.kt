@@ -6,14 +6,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import ru.kpfu.itis.data.api.places.PlacesService
+import ru.kpfu.itis.data.api.weather.WeatherService
 import ru.kpfu.itis.data.repository.AuthRepositoryImpl
 import ru.kpfu.itis.data.repository.CarWashesRepositoryImpl
 import ru.kpfu.itis.data.repository.FireStoreRepositoryImpl
 import ru.kpfu.itis.data.repository.LocationRepositoryImpl
+import ru.kpfu.itis.data.repository.WeatherRepositoryImpl
 import ru.kpfu.itis.domain.interfaces.AuthRepository
 import ru.kpfu.itis.domain.interfaces.CarWashesRepository
 import ru.kpfu.itis.domain.interfaces.FireStoreRepository
 import ru.kpfu.itis.domain.interfaces.LocationRepository
+import ru.kpfu.itis.domain.interfaces.WeatherRepository
 import javax.inject.Singleton
 
 @Module
@@ -49,5 +52,13 @@ class RepoModule {
         db: FirebaseFirestore
     ): FireStoreRepository {
         return FireStoreRepositoryImpl(db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeatherRepository(
+        weatherService: WeatherService
+    ): WeatherRepository {
+        return WeatherRepositoryImpl(weatherService)
     }
 }

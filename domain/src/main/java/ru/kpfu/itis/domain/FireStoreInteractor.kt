@@ -39,4 +39,12 @@ class FireStoreInteractor(
             }
         }
     }
+
+    suspend fun updateLevelOfCarPollution(level: Long): Result<Long?>{
+        return runCatching {
+            authRepository.getCurrentUser()?.let {
+                fireStoreRepository.updateLevelOfCarPollution(level, it.uid)
+            }
+        }
+    }
 }

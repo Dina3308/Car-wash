@@ -1,6 +1,7 @@
 package ru.kpfu.itis.carwash.di
 
 import android.content.Context
+import androidx.work.WorkerFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
@@ -9,13 +10,16 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
+import ru.kpfu.itis.carwash.workManager.di.CarWashWorkerFactory
 import ru.kpfu.itis.domain.AuthInteractor
 import ru.kpfu.itis.domain.FireStoreInteractor
 import ru.kpfu.itis.domain.MapInteractor
+import ru.kpfu.itis.domain.WeatherInteractor
 import ru.kpfu.itis.domain.interfaces.AuthRepository
 import ru.kpfu.itis.domain.interfaces.CarWashesRepository
 import ru.kpfu.itis.domain.interfaces.FireStoreRepository
 import ru.kpfu.itis.domain.interfaces.LocationRepository
+import ru.kpfu.itis.domain.interfaces.WeatherRepository
 import javax.inject.Singleton
 
 @Module
@@ -42,6 +46,12 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideWeatherInteractor(
+        weatherRepository: WeatherRepository
+    ): WeatherInteractor = WeatherInteractor(weatherRepository)
+
+    @Provides
+    @Singleton
     fun provideFusedClient(context: Context): FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
@@ -52,4 +62,6 @@ class AppModule {
     @Provides
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
+
+   
 }

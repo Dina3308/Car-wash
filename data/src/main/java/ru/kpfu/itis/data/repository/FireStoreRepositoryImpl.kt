@@ -3,6 +3,7 @@ package ru.kpfu.itis.data.repository
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.kpfu.itis.domain.interfaces.FireStoreRepository
 import java.util.*
@@ -17,8 +18,9 @@ class FireStoreRepositoryImpl(
 
         val city = hashMapOf(
             "address" to place.address,
-            "location" to place.latLng,
-            "date" to null
+            "location" to place.latLng?.let { GeoPoint(it.latitude, it.longitude)},
+            "date" to null,
+            "levelOfCarPollution" to 0
         )
 
         db.collection("users").document(userId)
@@ -36,7 +38,7 @@ class FireStoreRepositoryImpl(
             .document(userId)
             .update(mapOf(
                 "address" to place.address,
-                "location" to place.latLng
+                "location" to place.latLng?.let { GeoPoint(it.latitude, it.longitude)}
             ))
             .addOnSuccessListener {
                 continuation.resume(place)
@@ -74,4 +76,19 @@ class FireStoreRepositoryImpl(
             }
     }
 
+    override suspend fun updateLevelOfCarPollution(level: Long, userId: String): Long = suspendCancellableCoroutine { continuation ->
+        db.collection("users")
+            .document(userId)
+            .update(
+                mapOf(
+                    "levelOfCarPollution" to level
+                )
+            )
+            .addOnSuccessListener {
+                continuation.resume(level)
+            }
+            .addOnFailureListener {
+                continuation.resumeWithException(it)
+            }
+    }
 }

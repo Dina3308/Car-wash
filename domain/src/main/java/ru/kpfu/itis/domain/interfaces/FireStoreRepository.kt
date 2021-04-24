@@ -13,4 +13,6 @@ interface FireStoreRepository {
     suspend fun getUser(userId:String): DocumentSnapshot
 
     suspend fun updateDate(date: Date, userId: String): Date
+
+    suspend fun updateLevelOfCarPollution(level: Long, userId:String): Long
 }
