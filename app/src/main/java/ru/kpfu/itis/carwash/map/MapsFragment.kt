@@ -4,12 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -39,6 +40,7 @@ class MapsFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_maps, container, false)
         initMap()
+        initClickListener()
         return binding.root
     }
 
@@ -67,20 +69,16 @@ class MapsFragment : Fragment() {
             location().observe(
                 viewLifecycleOwner,
                 {
-                    try {
-                        it.getOrThrow().apply {
-                            map.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(
-                                        latitude,
-                                        longitude
-                                    ),
-                                    12f
-                                )
+                    it.getOrNull()?.run {
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    latitude,
+                                    longitude
+                                ),
+                                12f
                             )
-                        }
-                    } catch (throwable: Throwable) {
-                        Log.e("loc", "error")
+                        )
                     }
                 }
             )
@@ -88,11 +86,24 @@ class MapsFragment : Fragment() {
             carWashes().observe(
                 viewLifecycleOwner,
                 {
-                    it.getOrNull()?.listIterator()?.apply {
+                    it?.listIterator()?.apply {
                         showMarkers(this)
                     }
                 }
             )
+
+            progress().observe(
+                viewLifecycleOwner,
+                {
+                    binding.progressBar.isVisible = it
+                }
+            )
+        }
+    }
+
+    private fun initClickListener() {
+        binding.toolbar.leftIconClickListener {
+            findNavController().navigate(R.id.action_mapsFragment_to_homeFragment)
         }
     }
 

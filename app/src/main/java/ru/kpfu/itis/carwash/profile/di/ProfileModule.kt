@@ -9,9 +9,7 @@ import dagger.multibindings.IntoMap
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.carwash.profile.ProfileViewModel
-import ru.kpfu.itis.domain.AuthInteractor
-import ru.kpfu.itis.domain.FireStoreInteractor
-import ru.kpfu.itis.domain.WeatherInteractor
+import ru.kpfu.itis.domain.ProfileInteractor
 
 @Module(includes = [ViewModelModule::class])
 class ProfileModule {
@@ -19,10 +17,8 @@ class ProfileModule {
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)
     fun provideViewModel(
-        authInteractor: AuthInteractor,
-        fireStoreInteractor: FireStoreInteractor,
-        weatherInteractor: WeatherInteractor
-    ): ViewModel = ProfileViewModel(authInteractor, fireStoreInteractor, weatherInteractor)
+        interactor: ProfileInteractor
+    ): ViewModel = ProfileViewModel(interactor)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): ProfileViewModel =

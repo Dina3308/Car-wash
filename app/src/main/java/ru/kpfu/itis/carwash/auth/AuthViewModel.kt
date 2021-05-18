@@ -5,36 +5,31 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
+import ru.kpfu.itis.carwash.auth.model.User
 import ru.kpfu.itis.domain.AuthInteractor
-import ru.kpfu.itis.domain.FireStoreInteractor
 import ru.kpfu.itis.domain.model.AuthUser
 import javax.inject.Inject
 
 class AuthViewModel @Inject constructor(
-    private val authInteractor: AuthInteractor,
-    private val fireStoreInteractor: FireStoreInteractor
+    private val interactor: AuthInteractor
 ) : ViewModel() {
 
-    private val city: MutableLiveData<Result<Boolean>> = MutableLiveData()
-    private val register: MutableLiveData<Result<FirebaseUser>> = MutableLiveData()
+    private val register: MutableLiveData<Result<User>> = MutableLiveData()
     private val login: MutableLiveData<Result<Boolean>> = MutableLiveData()
     private val progress: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun city() : LiveData<Result<Boolean>> = city
-    fun register(): LiveData<Result<FirebaseUser>> = register
+    fun register(): LiveData<Result<User>> = register
     fun login(): LiveData<Result<Boolean>> = login
     fun progress(): LiveData<Boolean> = progress
 
-    fun register(authUser: AuthUser){
+    fun register(email: String, password: String, place: Place) {
         viewModelScope.launch {
             progress.value = true
-            val currentUser = authInteractor.register(authUser)
+            val currentUser = interactor.register(email, password, place)
             if (currentUser.isSuccess) {
                 currentUser.getOrNull()?.let {
-                    register.value = Result.success(it)
-
+                    register.value = Result.success(mapAuthUserToUser(it))
                 }
             } else {
                 currentUser.exceptionOrNull()?.let {
@@ -45,14 +40,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun login(authUser: AuthUser) {
+    fun login(email: String, password: String) {
         viewModelScope.launch {
             progress.value = true
-            val result = authInteractor.login(authUser)
+            val result = interactor.login(email, password)
             if (result.isSuccess) {
                 result.getOrNull()?.let {
                     login.value = Result.success(it)
-
                 }
             } else {
                 result.exceptionOrNull()?.let {
@@ -63,21 +57,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun addCity(place: Place, id: String){
-        viewModelScope.launch {
-            progress.value = true
-            val result = fireStoreInteractor.addUser(place, id)
-            if(result.isSuccess){
-                result.getOrNull()?.let {
-                    city.value = Result.success(it)
-                }
-            } else{
-                result.exceptionOrNull()?.let {
-                    city.value = Result.failure(it)
-                }
-            }
-            progress.value = false
-        }
+    private fun mapAuthUserToUser(user: AuthUser): User {
+        return User(
+            user.uid
+        )
     }
-
 }

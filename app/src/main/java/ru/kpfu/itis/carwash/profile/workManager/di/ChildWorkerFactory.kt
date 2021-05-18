@@ -1,4 +1,4 @@
-package ru.kpfu.itis.carwash.workManager.di
+package ru.kpfu.itis.carwash.profile.workManager.di
 
 import android.content.Context
 import androidx.work.ListenableWorker

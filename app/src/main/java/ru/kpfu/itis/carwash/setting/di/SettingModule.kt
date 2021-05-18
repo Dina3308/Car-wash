@@ -9,7 +9,7 @@ import dagger.multibindings.IntoMap
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.carwash.setting.SettingViewModel
-import ru.kpfu.itis.domain.FireStoreInteractor
+import ru.kpfu.itis.domain.SettingInteractor
 
 @Module(includes = [ViewModelModule::class])
 class SettingModule {
@@ -17,7 +17,7 @@ class SettingModule {
     @IntoMap
     @ViewModelKey(SettingViewModel::class)
     fun provideViewModel(
-        interactor: FireStoreInteractor
+        interactor: SettingInteractor
     ): ViewModel = SettingViewModel(interactor)
 
     @Provides

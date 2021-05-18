@@ -9,8 +9,8 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import ru.kpfu.itis.carwash.R
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
@@ -35,11 +35,40 @@ fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
     this.setText(spannableString, TextView.BufferType.SPANNABLE)
 }
 
-fun EditText.dateFormatter(date: Date){
-    this.setText(SimpleDateFormat("MM/dd/yyyy", Locale.forLanguageTag("ru")).format(date))
+fun EditText.dateFormatter(date: Date) {
+    this.setText(SimpleDateFormat("MM/dd/yyyy", Locale.forLanguageTag(resources.getString(R.string.language_tag))).format(date))
 }
 
-fun TextView.setDate(date: Date){
-    val format = SimpleDateFormat("EE, dd MMMM", Locale.forLanguageTag("ru"))
-    this.text = format.format(date)
+fun TextView.setDate(date: Date, id: Int? = null) {
+    val format = SimpleDateFormat("EE, dd MMMM", Locale.forLanguageTag(resources.getString(R.string.language_tag)))
+    if (id == null) {
+        this.text = format.format(date)
+    } else {
+        this.text = resources.getString(id, format.format(date))
+    }
+}
+
+fun EditText.isValidEmail(email: String) {
+    val matchResult = Regex("^[A-Za-z0-9._%+-]+@([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,6}\$").find(email)
+    when {
+        email.isEmpty() -> this.error = resources.getString(R.string.field_is_empty)
+        matchResult == null -> this.error = resources.getString(R.string.email_no_correct)
+        else -> this.error = null
+    }
+}
+
+fun EditText.isValidPassword(password: String, passwordRepeat: String = "") {
+    when {
+        password.isEmpty() -> this.error = resources.getString(R.string.field_is_empty)
+        password.length < 6 -> this.error = resources.getString(R.string.password_no_correct)
+        passwordRepeat.isNotEmpty() -> this.error = resources.getString(R.string.password_repeat__no_correct)
+        else -> this.error = null
+    }
+}
+
+fun EditText.isChosenCity(city: String) {
+    when {
+        city.isEmpty() -> this.error = resources.getString(R.string.search_city_is_empty)
+        else -> this.error = null
+    }
 }

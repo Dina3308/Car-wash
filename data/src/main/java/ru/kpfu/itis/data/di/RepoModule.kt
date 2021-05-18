@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import ru.kpfu.itis.data.api.places.PlacesService
 import ru.kpfu.itis.data.api.weather.WeatherService
+import ru.kpfu.itis.data.db.dao.CarWashDao
 import ru.kpfu.itis.data.repository.AuthRepositoryImpl
 import ru.kpfu.itis.data.repository.CarWashesRepositoryImpl
 import ru.kpfu.itis.data.repository.FireStoreRepositoryImpl
@@ -25,9 +26,10 @@ class RepoModule {
     @Provides
     @Singleton
     fun provideCarWashesRepository(
-        placesService: PlacesService
+        placesService: PlacesService,
+        carWashDao: CarWashDao
     ): CarWashesRepository {
-        return CarWashesRepositoryImpl(placesService)
+        return CarWashesRepositoryImpl(placesService, carWashDao)
     }
 
     @Provides

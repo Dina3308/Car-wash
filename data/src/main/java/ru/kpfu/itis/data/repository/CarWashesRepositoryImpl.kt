@@ -1,18 +1,34 @@
 package ru.kpfu.itis.data.repository
 
 import ru.kpfu.itis.data.api.places.PlacesService
-import ru.kpfu.itis.data.mappers.mapPlaceToCarWash
+import ru.kpfu.itis.data.db.dao.CarWashDao
+import ru.kpfu.itis.data.mappers.mapCarWashLocalToCarWash
+import ru.kpfu.itis.data.mappers.mapPlaceToCarWashLocal
 import ru.kpfu.itis.domain.interfaces.CarWashesRepository
 import ru.kpfu.itis.domain.model.CarWash
+import java.lang.Exception
 
 class CarWashesRepositoryImpl(
     private val placesService: PlacesService,
+    private val carWashDao: CarWashDao
 ) : CarWashesRepository {
 
-    override suspend fun getNearbyCarWashes(lat: Double, long: Double): List<CarWash> =
-        placesService.nearbyPlaces(
-            "$lat,$long",
-            3000,
-            "car-wash"
-        ).results.map(::mapPlaceToCarWash)
+    companion object {
+        private const val PLACE_TYPE = "car-wash"
+        private const val RADIUS_IN_METERS = 3000
+    }
+
+    override suspend fun getNearbyCarWashes(lat: Double, long: Double): List<CarWash>? {
+        return try {
+            val carWashes = placesService.nearbyPlaces(
+                "$lat,$long",
+                RADIUS_IN_METERS,
+                PLACE_TYPE
+            ).results.map(::mapPlaceToCarWashLocal)
+            carWashDao.updateCarWashes(carWashes)
+            carWashes.map(::mapCarWashLocalToCarWash)
+        } catch (ex: Exception) {
+            carWashDao.getCarWashes()?.map(::mapCarWashLocalToCarWash)
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package ru.kpfu.itis.data.mappers
 
 import ru.kpfu.itis.data.api.weather.Daily
-import ru.kpfu.itis.data.api.weather.ForecastsWeatherResponse
 import ru.kpfu.itis.data.api.weather.WeatherResponse
 import ru.kpfu.itis.domain.model.CurrentWeather
 import ru.kpfu.itis.domain.model.DailyWeather
@@ -20,7 +19,7 @@ fun mapWeatherResponseToWeatherCurrent(weatherResponse: WeatherResponse): Curren
 }
 
 fun mapDailyToWeatherDaily(weather: Daily): DailyWeather {
-    return with(weather){
+    return with(weather) {
         DailyWeather(
             dt,
             rain,

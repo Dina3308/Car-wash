@@ -1,8 +1,6 @@
-package ru.kpfu.itis.carwash.workManager.di
+package ru.kpfu.itis.carwash.profile.workManager.di
 
 import android.content.Context
-import android.util.Log
-import android.util.Log.DEBUG
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters

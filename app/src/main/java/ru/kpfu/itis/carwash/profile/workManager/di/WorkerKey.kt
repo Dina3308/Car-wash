@@ -1,7 +1,6 @@
-package ru.kpfu.itis.carwash.workManager.di
+package ru.kpfu.itis.carwash.profile.workManager.di
 
 import androidx.work.ListenableWorker
-import androidx.work.Worker
 import dagger.MapKey
 import kotlin.reflect.KClass
 

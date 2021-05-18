@@ -10,12 +10,14 @@ import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuthException
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.R
-import ru.kpfu.itis.carwash.common.ResultState
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.isValidEmail
+import ru.kpfu.itis.carwash.common.isValidPassword
 import ru.kpfu.itis.carwash.common.makeLinks
 import ru.kpfu.itis.carwash.databinding.SignInFragmentBinding
-import ru.kpfu.itis.domain.model.AuthUser
 import javax.inject.Inject
 
 class SignInFragment : Fragment() {
@@ -43,19 +45,25 @@ class SignInFragment : Fragment() {
     }
 
     private fun initSubscribes() {
-        viewModel.login().observe(viewLifecycleOwner, {
-            try {
-                it.getOrThrow().run {
-                    findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
+        viewModel.login().observe(
+            viewLifecycleOwner,
+            {
+                try {
+                    it.getOrThrow().run {
+                        findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
+                    }
+                } catch (ex: FirebaseAuthException) {
+                    showToast(resources.getString(R.string.sign_in_err))
                 }
-            }catch (throwable: Throwable){
-
             }
-        })
+        )
 
-        viewModel.progress().observe(viewLifecycleOwner, {
-            binding.progressBar.isVisible = it
-        })
+        viewModel.progress().observe(
+            viewLifecycleOwner,
+            {
+                binding.progressBar.isVisible = it
+            }
+        )
     }
 
     private fun initLoginClickListener() {
@@ -63,11 +71,15 @@ class SignInFragment : Fragment() {
             with(binding) {
                 val email = emailEdit.text.toString()
                 val password = passwordEdit.text.toString()
-                when {
-                    email.isEmpty() -> emailEdit.error = "Please enter email"
-                    password.isEmpty() -> passwordEdit.error = "Please enter password"
-                    else -> {
-                        viewModel.login(AuthUser(email, password))
+
+                emailEdit.isValidEmail(email)
+                passwordEdit.isValidPassword(password)
+
+                if (emailEdit.error == null && passwordEdit.error == null) {
+                    if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                        viewModel.login(email, password)
+                    } else {
+                        showToast(resources.getString(R.string.no_interner))
                     }
                 }
             }
@@ -75,7 +87,7 @@ class SignInFragment : Fragment() {
 
         binding.signUpTv.makeLinks(
             Pair(
-                "Зарегистрируйтесь",
+                resources.getString(R.string.sign_up_link),
                 View.OnClickListener {
                     findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
                 }

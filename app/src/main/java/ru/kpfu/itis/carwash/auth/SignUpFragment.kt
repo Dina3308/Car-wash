@@ -17,17 +17,24 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.firebase.auth.FirebaseAuthException
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.BuildConfig
 import ru.kpfu.itis.carwash.R
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.isChosenCity
+import ru.kpfu.itis.carwash.common.isValidEmail
+import ru.kpfu.itis.carwash.common.isValidPassword
 import ru.kpfu.itis.carwash.common.makeLinks
 import ru.kpfu.itis.carwash.databinding.SignUpFragmentBinding
-import ru.kpfu.itis.domain.model.AuthUser
 import java.util.*
 import javax.inject.Inject
 
 class SignUpFragment : Fragment() {
 
+    companion object {
+        private const val AUTOCOMPLETE_REQUEST_CODE = 46
+    }
     @Inject
     lateinit var viewModel: AuthViewModel
     private lateinit var binding: SignUpFragmentBinding
@@ -66,7 +73,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun startAutocompleteActivity() {
-        activity?.applicationContext?.let { Places.initialize(it, BuildConfig.API_KEY, Locale("ru")) }
+        activity?.applicationContext?.let { Places.initialize(it, BuildConfig.API_KEY, Locale(resources.getString(R.string.language_tag))) }
         val intent = activity?.applicationContext?.let {
             Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY,
@@ -79,47 +86,47 @@ class SignUpFragment : Fragment() {
     }
 
     private fun initSubscribes() {
-        viewModel.register().observe(viewLifecycleOwner, {
-            try {
-                it.getOrThrow().run {
-                    viewModel.addCity(place, uid)
-                }
-            }catch (throwable: Throwable){
-
-            }
-        })
-
-        viewModel.city().observe(viewLifecycleOwner, {
-            try {
-                it.getOrThrow().run {
-                    showToast("успешно")
+        viewModel.register().observe(
+            viewLifecycleOwner,
+            {
+                try {
+                    it.getOrThrow()
                     findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
+                } catch (ex: FirebaseAuthException) {
+                    showToast(resources.getString(R.string.email_is_exists))
                 }
-            }catch (throwable: Throwable){
-
             }
-        })
+        )
 
-        viewModel.progress().observe(viewLifecycleOwner, {
-            binding.progressBar.isVisible = it
-        })
+        viewModel.progress().observe(
+            viewLifecycleOwner,
+            {
+                binding.progressBar.isVisible = it
+            }
+        )
     }
-
 
     private fun initRegisterClickListener() {
         binding.registerBtn.setOnClickListener {
             with(binding) {
+
                 val email = emailEdit.text.toString()
                 val password = passwordEdit.text.toString()
                 val passwordRepeat = passwordRepeatEdit.text.toString()
-                when {
-                    email.isEmpty() -> emailEdit.error = "Please enter email"
-                    password.isEmpty() -> passwordEdit.error = "Please enter password"
-                    passwordRepeat.isEmpty() -> passwordRepeatEdit.error = "Please enter password"
-                    password != passwordRepeat -> showToast("no correct password")
-                    searchCityEdit.text.toString().isEmpty() -> searchCityEdit.error = "Please choose city"
-                    else -> {
-                        viewModel.register(AuthUser(email, password))
+                val city = searchCityEdit.text.toString()
+
+                emailEdit.isValidEmail(email)
+                passwordEdit.isValidPassword(password)
+                passwordRepeatEdit.isValidPassword(passwordRepeat, password)
+                searchCityEdit.isChosenCity(city)
+
+                if (emailEdit.error == null && passwordEdit.error == null && passwordRepeatEdit.error == null &&
+                    searchCityEdit.error == null
+                ) {
+                    if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                        viewModel.register(email, password, place)
+                    } else {
+                        showToast(resources.getString(R.string.no_interner))
                     }
                 }
             }
@@ -127,7 +134,7 @@ class SignUpFragment : Fragment() {
 
         binding.signIn.makeLinks(
             Pair(
-                "Войти",
+                resources.getString(R.string.sign_in_link),
                 View.OnClickListener {
                     findNavController().navigate(R.id.action_signUpFragment_to_signInFragment)
                 }
@@ -141,9 +148,5 @@ class SignUpFragment : Fragment() {
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private const val AUTOCOMPLETE_REQUEST_CODE = 46
     }
 }

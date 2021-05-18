@@ -1,15 +1,13 @@
 package ru.kpfu.itis.carwash.setting
 
-import android.content.Context
-import androidx.core.view.isVisible
-import ru.kpfu.itis.carwash.App
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,6 +16,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.BuildConfig
 import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.databinding.FragmentSettingsBinding
@@ -61,7 +60,7 @@ class SettingFragment : Fragment() {
     }
 
     private fun startAutocompleteActivity() {
-        activity?.applicationContext?.let { Places.initialize(it, BuildConfig.API_KEY, Locale("ru")) }
+        activity?.applicationContext?.let { Places.initialize(it, BuildConfig.API_KEY, Locale(resources.getString(R.string.language_tag))) }
         val intent = activity?.applicationContext?.let {
             Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY,
@@ -73,7 +72,7 @@ class SettingFragment : Fragment() {
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
     }
 
-    private fun initClickListener(){
+    private fun initClickListener() {
         binding.toolbar.leftIconClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_homeFragment)
         }
@@ -83,33 +82,32 @@ class SettingFragment : Fragment() {
         }
     }
 
-    private fun initSubscribes(){
-        with(viewModel){
-            progress().observe(viewLifecycleOwner, {
-                binding.progressBar.isVisible = it
-            })
+    private fun initSubscribes() {
+        with(viewModel) {
+            progress().observe(
+                viewLifecycleOwner,
+                {
+                    binding.progressBar.isVisible = it
+                }
+            )
 
-            user().observe(viewLifecycleOwner, {
-                try {
-                    it.getOrThrow().run {
-                        binding.cityTv.text = getString(R.string.choose_city, this.getString("address"))
+            cityAddress().observe(
+                viewLifecycleOwner,
+                {
+                    it.getOrNull()?.run {
+                        binding.cityTv.text = getString(R.string.choose_city, this)
                     }
                 }
-                catch (throwable: Throwable){
+            )
 
-                }
-            })
-
-            city().observe(viewLifecycleOwner, {
-                try {
-                    it.getOrThrow().run {
+            city().observe(
+                viewLifecycleOwner,
+                {
+                    it.getOrNull()?.run {
                         binding.cityTv.text = getString(R.string.choose_city, address)
                     }
-                }catch (throwable: Throwable){
-
                 }
-            })
-
+            )
         }
     }
 

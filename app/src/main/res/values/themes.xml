@@ -78,6 +78,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">32sp</item>
         <item name="android:layout_marginBottom">32dp</item>
-
     </style>
+
+    <style name="SeekBarWithoutSteps" parent="Base.Widget.AppCompat.SeekBar.Discrete">
+        <item name="tickMark">@null</item>
+    </style>
+
 </resources>

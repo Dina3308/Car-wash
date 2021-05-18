@@ -35,16 +35,18 @@ class SplashFragment : Fragment() {
 
     private fun initSubscribes() {
         with(viewModel) {
-            user().observe(viewLifecycleOwner, {
-                findNavController().navigate(
-                    if(it != null){
-                        R.id.action_splashFragment_to_homeFragment
-                    }
-                    else{
-                        R.id.action_splashFragment_to_signInFragment
-                    }
-                )
-            })
+            user().observe(
+                viewLifecycleOwner,
+                {
+                    findNavController().navigate(
+                        if (it) {
+                            R.id.action_splashFragment_to_homeFragment
+                        } else {
+                            R.id.action_splashFragment_to_signInFragment
+                        }
+                    )
+                }
+            )
         }
     }
 }

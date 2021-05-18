@@ -13,13 +13,18 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    fun bindPlacesService(@Named("tag_retrofit_places")retrofit: Retrofit): PlacesService = retrofit.create(
+    fun bindPlacesService(@Named(TAG_RETROFIT_PLACES)retrofit: Retrofit): PlacesService = retrofit.create(
         PlacesService::class.java
     )
 
     @Provides
     @Singleton
-    fun bindWeatherService(@Named("tag_retrofit_weather")retrofit: Retrofit): WeatherService = retrofit.create(
+    fun bindWeatherService(@Named(TAG_RETROFIT_WEATHER)retrofit: Retrofit): WeatherService = retrofit.create(
         WeatherService::class.java
     )
+
+    companion object {
+        private const val TAG_RETROFIT_WEATHER = "tag_retrofit_weather"
+        private const val TAG_RETROFIT_PLACES = "tag_retrofit_places"
+    }
 }

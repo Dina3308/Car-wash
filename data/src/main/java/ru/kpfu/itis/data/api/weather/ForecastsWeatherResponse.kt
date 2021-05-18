@@ -22,7 +22,7 @@ data class Daily(
 
 data class Temp(
     @SerializedName("min")
-    val min : Double,
+    val min: Double,
     @SerializedName("max")
-    val max : Double
+    val max: Double
 )

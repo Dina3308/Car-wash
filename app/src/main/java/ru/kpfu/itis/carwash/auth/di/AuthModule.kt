@@ -10,7 +10,6 @@ import ru.kpfu.itis.carwash.auth.AuthViewModel
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.domain.AuthInteractor
-import ru.kpfu.itis.domain.FireStoreInteractor
 
 @Module(includes = [ViewModelModule::class])
 class AuthModule {
@@ -19,9 +18,8 @@ class AuthModule {
     @IntoMap
     @ViewModelKey(AuthViewModel::class)
     fun provideViewModel(
-        authInteractor: AuthInteractor,
-        fireStoreInteractor: FireStoreInteractor
-    ): ViewModel = AuthViewModel(authInteractor, fireStoreInteractor)
+        authInteractor: AuthInteractor
+    ): ViewModel = AuthViewModel(authInteractor)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): AuthViewModel =

@@ -27,6 +27,5 @@ class App : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(Log.INFO)
             .setWorkerFactory(appComponent.factory())
             .build()
-
     }
 }

@@ -9,12 +9,11 @@ interface WeatherService {
     suspend fun getWeatherByCoord(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
-    ) : WeatherResponse
+    ): WeatherResponse
 
     @GET("onecall?exclude=hourly,minutely,alerts")
     suspend fun getForecastsWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-    ) : ForecastsWeatherResponse
-
+    ): ForecastsWeatherResponse
 }
