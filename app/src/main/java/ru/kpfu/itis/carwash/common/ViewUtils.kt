@@ -61,7 +61,7 @@ fun EditText.isValidPassword(password: String, passwordRepeat: String = "") {
     when {
         password.isEmpty() -> this.error = resources.getString(R.string.field_is_empty)
         password.length < 6 -> this.error = resources.getString(R.string.password_no_correct)
-        passwordRepeat.isNotEmpty() -> this.error = resources.getString(R.string.password_repeat__no_correct)
+        passwordRepeat.isNotEmpty() && passwordRepeat != password -> this.error = resources.getString(R.string.password_repeat__no_correct)
         else -> this.error = null
     }
 }
