@@ -14,7 +14,7 @@ class CarWashesRepositoryImpl(
 ) : CarWashesRepository {
 
     companion object {
-        private const val PLACE_TYPE = "car-wash"
+        private const val PLACE_TYPE = "car_wash"
         private const val RADIUS_IN_METERS = 3000
     }
 
