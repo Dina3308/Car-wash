@@ -7,22 +7,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
+import ru.kpfu.itis.carwash.common.Event
+import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.map.model.CarWashMarker
 import ru.kpfu.itis.domain.MapInteractor
 import ru.kpfu.itis.domain.model.CarWash
 import javax.inject.Inject
 
 class MapsViewModel @Inject constructor(
-    private val interactor: MapInteractor
+    private val interactor: MapInteractor,
+    private val resourceManager: ResourceManager
 ) : ViewModel() {
 
-    private val carWashes: MutableLiveData<List<CarWashMarker>?> = MutableLiveData()
-    private val location: MutableLiveData<Result<Location>> = MutableLiveData()
+    private val carWashes: MutableLiveData<List<CarWashMarker>> = MutableLiveData()
+    private val location: MutableLiveData<Location> = MutableLiveData()
     private val progress: MutableLiveData<Boolean> = MutableLiveData()
+    private val showErrorEvent: MutableLiveData<Event<String>> = MutableLiveData()
 
-    fun carWashes(): MutableLiveData<List<CarWashMarker>?> = carWashes
-    fun location(): MutableLiveData<Result<Location>> = location
+    fun carWashes(): MutableLiveData<List<CarWashMarker>> = carWashes
+    fun location(): MutableLiveData<Location> = location
     fun progress(): LiveData<Boolean> = progress
+    fun showErrorEvent(): LiveData<Event<String>> = showErrorEvent
 
     fun showNearbyCarWashes() {
         viewModelScope.launch {
@@ -30,11 +35,9 @@ class MapsViewModel @Inject constructor(
             val userLocation = interactor.getUserLocation()
             if (userLocation.isSuccess) {
                 userLocation.getOrNull()?.let {
-                    location.value = Result.success(it)
+                    location.value = it
                     carWashes.value = interactor.getNearbyCarWashes(it)?.map(::mapCarWashToCarWashMarker)
                 }
-            } else {
-                userLocation.exceptionOrNull()?.let { location.value = Result.failure(it) }
             }
             progress.value = false
         }

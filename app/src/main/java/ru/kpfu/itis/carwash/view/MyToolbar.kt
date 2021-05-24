@@ -10,43 +10,40 @@ import androidx.databinding.DataBindingUtil
 import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.databinding.CustomToolbarBinding
 
-class MyToolbar(
+class MyToolbar @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet,
-) : LinearLayout(context, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private var leftIcon: Drawable? = null
-    private var right1Icon: Drawable? = null
-    private var right2Icon: Drawable? = null
-    private var title: String? = null
-    private val binding: CustomToolbarBinding
+    private var binding: CustomToolbarBinding = DataBindingUtil.inflate(
+        LayoutInflater.from(context),
+        R.layout.custom_toolbar,
+        this@MyToolbar,
+        true
+    )
 
     init {
-        context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.MyToolbar,
-            0,
-            0
-        ).apply {
-            try {
-                binding = DataBindingUtil.inflate(
-                    LayoutInflater.from(context),
-                    R.layout.custom_toolbar,
-                    this@MyToolbar,
-                    true
-                )
-                leftIcon = getDrawable(R.styleable.MyToolbar_setLeftIcon)
-                right1Icon = getDrawable(R.styleable.MyToolbar_setRight1Icon)
-                right2Icon = getDrawable(R.styleable.MyToolbar_setRight2Icon)
-                title = getString(R.styleable.MyToolbar_setTitle)
+        applyAttributes(attrs)
+    }
 
-                title?.let { setTitle(it) }
-                leftIcon?.let { setLeftIcon(it) }
-                right1Icon?.let { setRight1Icon(it) }
-                right2Icon?.let { setRight2Icon(it) }
-            } finally {
-                recycle()
-            }
+    private fun applyAttributes(attrs: AttributeSet?) {
+        attrs?.let {
+            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.MyToolbar)
+
+            val leftIcon = typedArray.getDrawable(R.styleable.MyToolbar_setLeftIcon)
+            leftIcon?.let { setLeftIcon(it) }
+
+            val right1Icon = typedArray.getDrawable(R.styleable.MyToolbar_setRight1Icon)
+            right1Icon?.let { setRight1Icon(it) }
+
+            val right2Icon = typedArray.getDrawable(R.styleable.MyToolbar_setRight2Icon)
+            right2Icon?.let { setRight2Icon(it) }
+
+            val title = typedArray.getString(R.styleable.MyToolbar_setTitle)
+            title?.let { setTitle(it) }
+
+            typedArray.recycle()
         }
     }
 

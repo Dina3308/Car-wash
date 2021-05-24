@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import ru.kpfu.itis.carwash.auth.AuthViewModel
+import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.domain.AuthInteractor
@@ -18,8 +19,9 @@ class AuthModule {
     @IntoMap
     @ViewModelKey(AuthViewModel::class)
     fun provideViewModel(
-        authInteractor: AuthInteractor
-    ): ViewModel = AuthViewModel(authInteractor)
+        authInteractor: AuthInteractor,
+        resourceManager: ResourceManager
+    ): ViewModel = AuthViewModel(authInteractor, resourceManager)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): AuthViewModel =

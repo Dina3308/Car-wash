@@ -5,11 +5,11 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 
-object NetworkConnectionUtil {
-    fun isConnected(context: Context?): Boolean {
+class NetworkConnectionUtil(val context: Context) {
+    fun isConnected(): Boolean {
         var result = false
         val connectivityManager =
-            context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val networkCapabilities = connectivityManager.activeNetwork ?: return false
             val actNw =

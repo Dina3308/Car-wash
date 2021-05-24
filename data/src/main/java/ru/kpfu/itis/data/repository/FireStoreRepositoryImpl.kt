@@ -7,6 +7,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.kpfu.itis.data.mappers.mapDocumentSnapShotToUserEntity
 import ru.kpfu.itis.domain.interfaces.FireStoreRepository
 import ru.kpfu.itis.domain.model.UserEntity
+import java.net.UnknownHostException
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -23,8 +24,7 @@ class FireStoreRepositoryImpl(
         private const val ADDRESS_FIELD = "address"
     }
 
-    override suspend fun addUser(place: Place, userId: String): Boolean = suspendCancellableCoroutine { continuation ->
-
+    override suspend fun addUser(place: Place, userId: String): Unit = suspendCancellableCoroutine { continuation ->
         val city = hashMapOf(
             ADDRESS_FIELD to place.address,
             LOCATION_FIELD to place.latLng?.let { GeoPoint(it.latitude, it.longitude) },
@@ -35,7 +35,7 @@ class FireStoreRepositoryImpl(
         db.collection(COLLECTION_PATH).document(userId)
             .set(city)
             .addOnSuccessListener {
-                continuation.resume(true)
+                continuation.resume(Unit)
             }
             .addOnFailureListener {
                 continuation.resumeWithException(it)
@@ -86,6 +86,9 @@ class FireStoreRepositoryImpl(
             }
             .addOnFailureListener {
                 continuation.resumeWithException(it)
+            }
+            .addOnCanceledListener {
+                continuation.resumeWithException(UnknownHostException())
             }
     }
 

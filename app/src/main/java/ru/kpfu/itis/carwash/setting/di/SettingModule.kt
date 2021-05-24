@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.carwash.setting.SettingViewModel
@@ -17,8 +19,10 @@ class SettingModule {
     @IntoMap
     @ViewModelKey(SettingViewModel::class)
     fun provideViewModel(
-        interactor: SettingInteractor
-    ): ViewModel = SettingViewModel(interactor)
+        interactor: SettingInteractor,
+        resourceManager: ResourceManager,
+        networkConnectionUtil: NetworkConnectionUtil
+    ): ViewModel = SettingViewModel(interactor, resourceManager, networkConnectionUtil)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): SettingViewModel =

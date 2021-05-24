@@ -9,6 +9,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.ResourceManager
+import ru.kpfu.itis.carwash.common.ResourceManagerImpl
 import ru.kpfu.itis.carwash.profile.workManager.NotificationUtil
 import ru.kpfu.itis.domain.AuthInteractor
 import ru.kpfu.itis.domain.MapInteractor
@@ -70,4 +73,16 @@ class AppModule {
     @Provides
     @Singleton
     fun provideNotification(context: Context): NotificationUtil = NotificationUtil(context)
+
+    @Provides
+    @Singleton
+    fun provideResourceManager(context: Context): ResourceManager {
+        return ResourceManagerImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkUtil(context: Context): NetworkConnectionUtil {
+        return NetworkConnectionUtil(context)
+    }
 }

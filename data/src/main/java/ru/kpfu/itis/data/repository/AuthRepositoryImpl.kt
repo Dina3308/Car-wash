@@ -23,11 +23,11 @@ class AuthRepositoryImpl(
             }
     }
 
-    override suspend fun login(email: String, password: String): Boolean = suspendCancellableCoroutine { continuation ->
+    override suspend fun login(email: String, password: String): Unit = suspendCancellableCoroutine { continuation ->
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    continuation.resume(true)
+                    continuation.resume(Unit)
                 }
             }.addOnFailureListener {
                 continuation.resumeWithException(it)
@@ -36,8 +36,7 @@ class AuthRepositoryImpl(
 
     override suspend fun getCurrentUser(): AuthUser? = auth.currentUser?.let { mapFireBaseUserToAuthUser(it) }
 
-    override suspend fun signOut(): Boolean {
+    override suspend fun signOut() {
         auth.signOut()
-        return true
     }
 }

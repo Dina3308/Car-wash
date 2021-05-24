@@ -6,7 +6,7 @@ import java.util.*
 
 interface FireStoreRepository {
 
-    suspend fun addUser(place: Place, userId: String): Boolean
+    suspend fun addUser(place: Place, userId: String)
 
     suspend fun updateCity(place: Place, userId: String): Place
 

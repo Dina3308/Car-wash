@@ -5,103 +5,127 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.kpfu.itis.carwash.profile.mapper.mapCurrentWeatherToCurrentWeatherDetails
-import ru.kpfu.itis.carwash.profile.mapper.mapUserEntityToUserProfile
+import ru.kpfu.itis.carwash.R
+import ru.kpfu.itis.carwash.common.Event
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.profile.model.CurrentWeatherDetails
 import ru.kpfu.itis.carwash.profile.model.UserProfile
 import ru.kpfu.itis.domain.ProfileInteractor
+import ru.kpfu.itis.domain.model.CurrentWeather
+import ru.kpfu.itis.domain.model.UserEntity
 import java.lang.Exception
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
-    private val interactor: ProfileInteractor
+    private val interactor: ProfileInteractor,
+    private val resourceManager: ResourceManager,
+    private val networkConnectionUtil: NetworkConnectionUtil
 ) : ViewModel() {
 
+    companion object {
+        private const val LEVEL_OF_CAR_POLLUTION = 15
+        private const val MATCH_FOR_DATE = "EE, dd MMMM"
+        private const val MATCH_FOR_DATE_PICKER = "MM/dd/yyyy"
+    }
+
     private val progress: MutableLiveData<Boolean> = MutableLiveData()
-    private val signOut: MutableLiveData<Boolean> = MutableLiveData()
-    private val date: MutableLiveData<Result<Date>> = MutableLiveData()
-    private val user: MutableLiveData<Result<UserProfile>> = MutableLiveData()
-    private val weather: MutableLiveData<Result<CurrentWeatherDetails>> = MutableLiveData()
-    private val dateCarWash: MutableLiveData<Result<Date?>> = MutableLiveData()
-    private val levelOfCarPollution: MutableLiveData<Result<Long?>> = MutableLiveData()
+    private val signOut: MutableLiveData<Event<Unit>> = MutableLiveData()
+    private val date: MutableLiveData<Event<String>> = MutableLiveData()
+    private val user: MutableLiveData<UserProfile> = MutableLiveData()
+    private val weather: MutableLiveData<CurrentWeatherDetails> = MutableLiveData()
+    private val dateCarWash: MutableLiveData<Event<String>> = MutableLiveData()
+    private val levelOfCarPollution: MutableLiveData<Float> = MutableLiveData()
+    private val showDialogEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
+    private val showErrorEvent: MutableLiveData<Event<String>> = MutableLiveData()
 
     init {
         getUser()
     }
 
     fun progress(): LiveData<Boolean> = progress
-    fun signOut(): LiveData<Boolean> = signOut
-    fun date(): LiveData<Result<Date>> = date
-    fun user(): LiveData<Result<UserProfile>> = user
-    fun weather(): LiveData<Result<CurrentWeatherDetails>> = weather
-    fun dateCarWash(): LiveData<Result<Date?>> = dateCarWash
-    fun levelOfCarPollution(): LiveData<Result<Long?>> = levelOfCarPollution
+    fun signOut(): LiveData<Event<Unit>> = signOut
+    fun date(): LiveData<Event<String>> = date
+    fun user(): LiveData<UserProfile> = user
+    fun weather(): LiveData<CurrentWeatherDetails> = weather
+    fun dateCarWash(): LiveData<Event<String>> = dateCarWash
+    fun levelOfCarPollution(): LiveData<Float> = levelOfCarPollution
+    fun showDialogEvent(): LiveData<Event<Unit>> = showDialogEvent
+    fun showErrorEvent(): LiveData<Event<String>> = showErrorEvent
 
     fun signOutUser() {
         viewModelScope.launch {
             progress.value = true
-            signOut.value = interactor.signOut()
+            interactor.signOut()
+            signOut.value = Event(Unit)
             progress.value = false
         }
     }
 
-    fun setDate(dateOfLastWash: Date) {
+    fun updateDate(dateOfLastWash: Date) {
         viewModelScope.launch {
-            progress.value = true
-            val dateResult = interactor.updateDate(dateOfLastWash)
-            if (dateResult.isSuccess) {
+            if (networkConnectionUtil.isConnected()) {
+                progress.value = true
+                val dateResult = interactor.updateDate(dateOfLastWash)
                 dateResult.getOrNull()?.let {
-                    date.value = Result.success(it)
+                    showDialog(it)
+                    date.value = Event(dateFormatterForDatePicker(it))
                 }
+                progress.value = false
             } else {
-                dateResult.exceptionOrNull()?.let {
-                    date.value = Result.failure(it)
-                }
+                showErrorEvent.value = Event(resourceManager.getString(R.string.no_interner))
             }
-            progress.value = false
         }
     }
 
     fun showWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
-            try {
-                progress.value = true
-                interactor.getCurrentWeather(lat, lon).also {
-                    weather.value = Result.success(mapCurrentWeatherToCurrentWeatherDetails(it))
-                }
-            } catch (ex: Exception) {
-                weather.value = Result.failure(ex)
-            } finally {
-                progress.value = false
-            }
-        }
-    }
-
-    fun updateLevelOfCarPollution(level: Long) {
-        viewModelScope.launch {
             progress.value = true
-            val levelResult = interactor.updateLevelOfCarPollution(level)
-            if (levelResult.isSuccess) {
-                levelResult.getOrNull()?.let {
-                    levelOfCarPollution.value = Result.success(it)
+            val currentWeather = interactor.getCurrentWeather(lat, lon)
+            if (currentWeather.isSuccess) {
+                currentWeather.getOrNull()?.let {
+                    weather.value = mapCurrentWeatherToCurrentWeatherDetails(it)
                 }
+                progress.value = false
             } else {
-                levelResult.exceptionOrNull()?.let {
-                    date.value = Result.failure(it)
-                }
+                showErrorEvent.value = Event(resourceManager.getString(R.string.no_interner))
             }
-            progress.value = false
         }
     }
 
-    fun getDateCarWash(location: Pair<Double?, Double?>) {
+    fun updateLevelOfCarPollution(level: Int) {
+        viewModelScope.launch {
+            if (networkConnectionUtil.isConnected()) {
+                progress.value = true
+                val levelResult = interactor.updateLevelOfCarPollution(level.toLong())
+                levelResult.getOrNull()?.let {
+                    levelOfCarPollution.value = it.toFloat()
+                }
+                progress.value = false
+            } else {
+                showErrorEvent.value = Event(resourceManager.getString(R.string.no_interner))
+            }
+        }
+    }
+
+    fun getDateCarWash(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
                 progress.value = true
-                dateCarWash.value = Result.success(interactor.getDayOfCarWash(location))
+
+                val date = interactor.getDayOfCarWash(lat, lon)
+
+                val carWashNotification = if (date != null) {
+                    resourceManager.getString(R.string.day_car_wash, dateFormatter(date))
+                } else {
+                    resourceManager.getString(R.string.no_car_wash)
+                }
+
+                dateCarWash.value = Event(carWashNotification)
             } catch (ex: Exception) {
-                dateCarWash.value = Result.failure(ex)
+                showErrorEvent.value = Event(resourceManager.getString(R.string.no_interner))
             } finally {
                 progress.value = false
             }
@@ -114,14 +138,80 @@ class ProfileViewModel @Inject constructor(
             val document = interactor.getUserDocument()
             if (document.isSuccess) {
                 document.getOrNull()?.let {
-                    user.value = Result.success(mapUserEntityToUserProfile(it))
-                }
-            } else {
-                document.exceptionOrNull()?.let {
-                    user.value = Result.failure(it)
+                    user.value = mapUserEntityToUserProfile(it)
                 }
             }
             progress.value = false
         }
+    }
+
+    private fun showDialog(date: Date) {
+        if (compareDates(date)) {
+            updateLevelOfCarPollution(0)
+        } else {
+            showDialogEvent.value = Event(Unit)
+        }
+    }
+
+    private fun mapCurrentWeatherToCurrentWeatherDetails(weather: CurrentWeather): CurrentWeatherDetails {
+        return with(weather) {
+            CurrentWeatherDetails(
+                temp,
+                description,
+                icon,
+                tempMax,
+                tempMin,
+                name,
+                dateFormatter(Calendar.getInstance().time)
+            )
+        }
+    }
+
+    private fun mapUserEntityToUserProfile(user: UserEntity): UserProfile {
+        return with(user) {
+            UserProfile(
+                address!!,
+                lat!!,
+                lon!!,
+                dateFormatterForDatePicker(date),
+                convertLevelOfCarPollution(levelOfCarPollution!!)
+            )
+        }
+    }
+
+    private fun dateFormatter(date: Date): String {
+        return SimpleDateFormat(MATCH_FOR_DATE, Locale.forLanguageTag(resourceManager.getString(R.string.language_tag)))
+            .format(date)
+    }
+
+    private fun dateFormatterForDatePicker(date: Date?): String {
+        return if (date != null) {
+            SimpleDateFormat(MATCH_FOR_DATE_PICKER, Locale.forLanguageTag(resourceManager.getString(R.string.language_tag)))
+                .format(date)
+        } else {
+            resourceManager.getString(R.string.choose_date)
+        }
+    }
+
+    private fun convertLevelOfCarPollution(level: Int): Float {
+        return if (level > LEVEL_OF_CAR_POLLUTION) {
+            LEVEL_OF_CAR_POLLUTION.toFloat()
+        } else {
+            level.toFloat()
+        }
+    }
+
+    private fun compareDates(date: Date): Boolean {
+        val today = Calendar.getInstance()
+        val dateLastCarWash = Calendar.getInstance().also {
+            it.time = date
+        }
+        if (today.get(Calendar.YEAR) == dateLastCarWash.get(Calendar.YEAR) &&
+            today.get(Calendar.MONTH) == dateLastCarWash.get(Calendar.MONTH) &&
+            today.get(Calendar.DAY_OF_MONTH) == dateLastCarWash.get(Calendar.DAY_OF_MONTH)
+        ) {
+            return true
+        }
+        return false
     }
 }

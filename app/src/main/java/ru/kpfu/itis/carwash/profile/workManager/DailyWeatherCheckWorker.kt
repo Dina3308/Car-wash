@@ -21,7 +21,7 @@ class DailyWeatherCheckWorker @Inject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             try {
-                if (interactor.dailyWeatherCheck()) {
+                if (interactor.showNotification()) {
                     notification.createNotification()
                 }
                 Result.success()

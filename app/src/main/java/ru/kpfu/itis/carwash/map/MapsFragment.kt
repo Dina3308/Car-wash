@@ -2,11 +2,11 @@ package ru.kpfu.itis.carwash.map
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -39,17 +39,18 @@ class MapsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_maps, container, false)
-        initMap()
-        initClickListener()
         return binding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         (activity?.application as App).appComponent.mapsComponentFactory()
             .create(this)
             .inject(this)
+
+        initMap()
+        initClickListener()
     }
 
     private fun initMap() {
@@ -69,26 +70,22 @@ class MapsFragment : Fragment() {
             location().observe(
                 viewLifecycleOwner,
                 {
-                    it.getOrNull()?.run {
-                        map.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    latitude,
-                                    longitude
-                                ),
-                                12f
-                            )
+                    map.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(
+                                it.latitude,
+                                it.longitude
+                            ),
+                            12f
                         )
-                    }
+                    )
                 }
             )
 
             carWashes().observe(
                 viewLifecycleOwner,
                 {
-                    it?.listIterator()?.apply {
-                        showMarkers(this)
-                    }
+                    showMarkers(it.listIterator())
                 }
             )
 
@@ -96,6 +93,13 @@ class MapsFragment : Fragment() {
                 viewLifecycleOwner,
                 {
                     binding.progressBar.isVisible = it
+                }
+            )
+
+            showErrorEvent().observe(
+                viewLifecycleOwner,
+                {
+                    showToast(it.peekContent())
                 }
             )
         }
@@ -141,5 +145,9 @@ class MapsFragment : Fragment() {
                 }
             )
             .check()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

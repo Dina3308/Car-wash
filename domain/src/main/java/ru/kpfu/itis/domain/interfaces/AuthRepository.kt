@@ -4,7 +4,7 @@ import ru.kpfu.itis.domain.model.AuthUser
 
 interface AuthRepository {
     suspend fun register(email: String, password: String): AuthUser?
-    suspend fun login(email: String, password: String): Boolean
+    suspend fun login(email: String, password: String)
     suspend fun getCurrentUser(): AuthUser?
-    suspend fun signOut(): Boolean
+    suspend fun signOut()
 }

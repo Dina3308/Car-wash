@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.carwash.map.MapsViewModel
@@ -18,8 +19,9 @@ class MapsModule {
     @IntoMap
     @ViewModelKey(MapsViewModel::class)
     fun provideViewModel(
-        interactor: MapInteractor
-    ): ViewModel = MapsViewModel(interactor)
+        interactor: MapInteractor,
+        resourceManager: ResourceManager
+    ): ViewModel = MapsViewModel(interactor, resourceManager)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): MapsViewModel =

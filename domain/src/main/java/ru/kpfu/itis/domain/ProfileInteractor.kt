@@ -20,7 +20,7 @@ class ProfileInteractor(
         private const val LEVEL_OF_CAR_POLLUTION = 7
     }
 
-    suspend fun signOut(): Boolean = authRepository.signOut()
+    suspend fun signOut() = authRepository.signOut()
 
     suspend fun updateDate(date: Date): Result<Date?> {
         return runCatching {
@@ -46,17 +46,19 @@ class ProfileInteractor(
         }
     }
 
-    suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather {
-        return weatherRepository.getWeatherByCoord(lat, lon)
+    suspend fun getCurrentWeather(lat: Double, lon: Double): Result<CurrentWeather> {
+        return runCatching {
+            weatherRepository.getWeatherByCoord(lat, lon)
+        }
     }
 
-    suspend fun getDayOfCarWash(location: Pair<Double?, Double?>): Date? {
+    suspend fun getDayOfCarWash(lat: Double, lon: Double): Date? {
         var countOfDryDays = 0
         var numberDay = 1
         var carWashDay: Int? = null
         val date = Calendar.getInstance()
 
-        getForecastsWeather(location)?.forEach { elem ->
+        getForecastsWeather(lat, lon).forEach { elem ->
             if (elem.rain == null && elem.snow == null) {
                 countOfDryDays += 1
                 countOfDryDays.takeIf { it == 3 }?.let {
@@ -77,10 +79,12 @@ class ProfileInteractor(
         return null
     }
 
-    suspend fun dailyWeatherCheck(): Boolean {
+    suspend fun showNotification(): Boolean {
         val user = getUserDocument().getOrNull()
-        user?.location?.let {
-            getForecastsWeather(it)?.run {
+        val lat = user?.lat
+        val lon = user?.lon
+        if (lat != null && lon != null) {
+            getForecastsWeather(lat, lon).apply {
                 val rain = this[0].rain
                 val snow = this[0].snow
                 val level = user.levelOfCarPollution ?: 0
@@ -93,7 +97,7 @@ class ProfileInteractor(
                 if (snow == null && rain == null) {
                     updateLevelOfCarPollution((level + 1).toLong())
                 }
-                if (isNotify(it, level)) {
+                if (isNotify(lat, lon, level)) {
                     return true
                 }
             }
@@ -107,17 +111,12 @@ class ProfileInteractor(
         else -> PrecipitationIntensity.HEAVY.level
     }
 
-    private suspend fun getForecastsWeather(location: Pair<Double?, Double?>): List<DailyWeather>? {
-        val lat = location.first
-        val lon = location.second
-        if (lat != null && lon != null) {
-            return weatherRepository.getForecastsWeather(lat, lon)
-        }
-        return null
+    private suspend fun getForecastsWeather(lat: Double, lon: Double): List<DailyWeather> {
+        return weatherRepository.getForecastsWeather(lat, lon)
     }
 
-    private suspend fun isNotify(location: Pair<Double?, Double?>, level: Int): Boolean {
-        getDayOfCarWash(location)?.let {
+    private suspend fun isNotify(lat: Double, lon: Double, level: Int): Boolean {
+        getDayOfCarWash(lat, lon)?.also {
             val day = Calendar.getInstance().also { cal ->
                 cal.time = it
             }
