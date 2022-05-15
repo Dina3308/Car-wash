@@ -30,6 +30,9 @@ android {
         it.buildConfigField 'String', 'API_KEY', PLACES_API_KEY
         it.buildConfigField 'String', 'API_ENDPOINT_WEATHER', BASE_URL_WEATHER
         it.buildConfigField 'String', 'API_KEY_WEATHER', WEATHER_API_KEY
+        it.buildConfigField 'String', 'API_KEY_YANDEX_MAPS', YANDEX_MAPS_API_KEY
+        it.buildConfigField 'String', 'API_KEY_GEOAPIFY', GEOAPIFY_API_KEY
+        it.buildConfigField 'String', 'API_ENDPOINT_GEOAPIFY', BASE_URL_GEOAPIFY
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -74,6 +77,8 @@ dependencies {
 
     implementation "com.google.dagger:dagger:2.27"
     kapt "com.google.dagger:dagger-compiler:2.27"
+
+    implementation 'com.yandex.android:maps.mobile:4.0.0-lite'
 
     implementation "androidx.room:room-runtime:2.3.0"
     implementation "androidx.room:room-ktx:2.3.0"

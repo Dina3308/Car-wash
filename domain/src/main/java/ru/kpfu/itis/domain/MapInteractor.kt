@@ -16,6 +16,6 @@ class MapInteractor(
     }
 
     suspend fun getNearbyCarWashes(myLocation: Location): List<CarWash>? {
-        return carWashesRepository.getNearbyCarWashes(myLocation.latitude, myLocation.longitude)
+        return carWashesRepository.getCarWashes(myLocation.latitude, myLocation.longitude)
     }
 }

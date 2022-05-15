@@ -19,9 +19,8 @@ class MapsModule {
     @IntoMap
     @ViewModelKey(MapsViewModel::class)
     fun provideViewModel(
-        interactor: MapInteractor,
-        resourceManager: ResourceManager
-    ): ViewModel = MapsViewModel(interactor, resourceManager)
+        interactor: MapInteractor
+    ): ViewModel = MapsViewModel(interactor)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): MapsViewModel =

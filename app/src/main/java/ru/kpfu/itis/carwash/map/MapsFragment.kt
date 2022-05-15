@@ -10,28 +10,44 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.layers.ObjectEvent
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.user_location.UserLocationObjectListener
+import com.yandex.mapkit.user_location.UserLocationView
 import ru.kpfu.itis.carwash.App
-import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.databinding.FragmentMapsBinding
 import ru.kpfu.itis.carwash.map.model.CarWashMarker
+import ru.kpfu.itis.data.BuildConfig
 import javax.inject.Inject
+import com.yandex.mapkit.user_location.UserLocationLayer
+import ru.kpfu.itis.carwash.R
+import android.graphics.PointF
+import com.yandex.runtime.image.ImageProvider
+import ru.kpfu.itis.carwash.common.getBitmapFromVectorDrawable
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), UserLocationObjectListener {
 
     private lateinit var binding: FragmentMapsBinding
-    private lateinit var map: GoogleMap
+    private var userLocationLayer: UserLocationLayer? = null
+
     @Inject
     lateinit var viewModel: MapsViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MapKitFactory.setApiKey(BuildConfig.API_KEY_YANDEX_MAPS)
+        MapKitFactory.initialize(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,20 +65,48 @@ class MapsFragment : Fragment() {
             .create(this)
             .inject(this)
 
-        initMap()
-        initClickListener()
+        initSubscribes()
+        checkPermissions()
     }
 
-    private fun initMap() {
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync {
-            map = it ?: return@getMapAsync
-            map.setOnMyLocationButtonClickListener {
-                false
+    override fun onStop() {
+        super.onStop()
+        binding.map.onStop()
+        MapKitFactory.getInstance().onStop()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.map.onStart()
+        MapKitFactory.getInstance().onStart()
+    }
+
+    override fun onObjectAdded(userLocationView: UserLocationView) {
+        userLocationLayer?.setAnchor(
+            PointF(
+                binding.map.width * 0.5f,
+                binding.map.height() * 0.5f,
+            ),
+            PointF(
+                binding.map.width * 0.5f,
+                binding.map.height() * 0.83f,
+            )
+        )
+    }
+
+    override fun onObjectRemoved(p0: UserLocationView) = Unit
+
+    override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) = Unit
+
+    private fun initUserLocationLayer() {
+        userLocationLayer = MapKitFactory
+            .getInstance()
+            .createUserLocationLayer(binding.map.mapWindow)
+            .apply {
+                isVisible = true
+                isHeadingEnabled = true
+                setObjectListener(this@MapsFragment)
             }
-            initSubscribes()
-            checkPermissions()
-        }
     }
 
     private fun initSubscribes() {
@@ -70,14 +114,11 @@ class MapsFragment : Fragment() {
             location().observe(
                 viewLifecycleOwner,
                 {
-                    map.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(
-                                it.latitude,
-                                it.longitude
-                            ),
-                            12f
-                        )
+                    initUserLocationLayer()
+                    binding.map.map.move(
+                        CameraPosition(Point(it.latitude, it.longitude), 12f, 0.0f, 0.0f),
+                        Animation(Animation.Type.SMOOTH, 0F),
+                        null
                     )
                 }
             )
@@ -85,7 +126,8 @@ class MapsFragment : Fragment() {
             carWashes().observe(
                 viewLifecycleOwner,
                 {
-                    showMarkers(it.listIterator())
+                    println(it)
+                    showMarkers(it)
                 }
             )
 
@@ -105,21 +147,18 @@ class MapsFragment : Fragment() {
         }
     }
 
-    private fun initClickListener() {
-        binding.toolbar.leftIconClickListener {
-            findNavController().navigate(R.id.action_mapsFragment_to_homeFragment)
-        }
-    }
-
-    private fun showMarkers(carWashes: ListIterator<CarWashMarker>) {
+    private fun showMarkers(carWashes: List<CarWashMarker>) {
         for (carWash in carWashes) {
-            map.run {
-                addMarker(
-                    MarkerOptions()
-                        .position(carWash.latLng)
-                        .title(carWash.title)
-                )
-            }
+            val marker = binding.map.map.mapObjects.addPlacemark(
+                Point(
+                    carWash.latLng.latitude,
+                    carWash.latLng.longitude,
+                ),
+                ImageProvider.fromBitmap(requireContext().getBitmapFromVectorDrawable(R.drawable.ic_location_))
+            )
+            /*marker.addTapListener { mapObject, point ->
+
+            }*/
         }
     }
 
@@ -130,7 +169,6 @@ class MapsFragment : Fragment() {
             .withListener(
                 object : PermissionListener {
                     override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                        map.isMyLocationEnabled = true
                         viewModel.showNearbyCarWashes()
                     }
 

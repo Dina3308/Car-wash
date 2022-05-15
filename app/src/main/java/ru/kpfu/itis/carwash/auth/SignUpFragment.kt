@@ -57,6 +57,7 @@ class SignUpFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            println(data.toString())
             when (resultCode) {
                 Activity.RESULT_OK -> {
                     val result = data?.let { Autocomplete.getPlaceFromIntent(it) }

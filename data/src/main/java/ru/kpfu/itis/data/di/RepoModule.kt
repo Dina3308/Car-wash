@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
+import ru.kpfu.itis.data.api.geoapify.GeoapifyService
 import ru.kpfu.itis.data.api.places.PlacesService
 import ru.kpfu.itis.data.api.weather.WeatherService
 import ru.kpfu.itis.data.db.dao.CarWashDao
@@ -27,9 +28,10 @@ class RepoModule {
     @Singleton
     fun provideCarWashesRepository(
         placesService: PlacesService,
-        carWashDao: CarWashDao
+        carWashDao: CarWashDao,
+        geoapifyService: GeoapifyService
     ): CarWashesRepository {
-        return CarWashesRepositoryImpl(placesService, carWashDao)
+        return CarWashesRepositoryImpl(placesService, carWashDao, geoapifyService)
     }
 
     @Provides

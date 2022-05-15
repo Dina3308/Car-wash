@@ -15,8 +15,7 @@ import ru.kpfu.itis.domain.model.CarWash
 import javax.inject.Inject
 
 class MapsViewModel @Inject constructor(
-    private val interactor: MapInteractor,
-    private val resourceManager: ResourceManager
+    private val interactor: MapInteractor
 ) : ViewModel() {
 
     private val carWashes: MutableLiveData<List<CarWashMarker>> = MutableLiveData()

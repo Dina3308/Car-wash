@@ -41,6 +41,19 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    @Named(TAG_RETROFIT_GEOAPIFY)
+    fun provideRetrofitGeoapify(
+        @Named(TAG_CLIENT_GEOAPIFY)client: OkHttpClient,
+        converterFactory: GsonConverterFactory,
+        @Named(TAG_BASE_URL_GEOAPIFY) url: String
+    ): Retrofit = Retrofit.Builder()
+        .client(client)
+        .baseUrl(url)
+        .addConverterFactory(converterFactory)
+        .build()
+
+    @Provides
+    @Singleton
     @Named(TAG_CLIENT_PLACES)
     fun provideClient(
         @Named(TAG_AUTH) authInterceptor: Interceptor,
@@ -69,6 +82,19 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    @Named(TAG_CLIENT_GEOAPIFY)
+    fun provideClientGeoapify(
+        @Named(TAG_AUTH_GEOAPIFY) authInterceptor: Interceptor,
+        @Named(TAG_LOGGING) loggingInterceptor: Interceptor,
+        @Named(TAG_LANG_WEATHER) langInterceptor: Interceptor
+    ) = OkHttpClient().newBuilder()
+        .addInterceptor(authInterceptor)
+        .addInterceptor(loggingInterceptor)
+        .addInterceptor(langInterceptor)
+        .build()
+
+    @Provides
+    @Singleton
     @Named(TAG_AUTH)
     fun provideAuthInterceptor(): Interceptor = Interceptor { chain ->
         val newUrl = chain.request().url().newBuilder()
@@ -85,6 +111,18 @@ class NetworkModule {
     fun provideAuthWeatherInterceptor(): Interceptor = Interceptor { chain ->
         val newUrl = chain.request().url().newBuilder()
             .addQueryParameter("appid", BuildConfig.API_KEY_WEATHER)
+            .build()
+
+        val newRequest = chain.request().newBuilder().url(newUrl).build()
+        chain.proceed(newRequest)
+    }
+
+    @Provides
+    @Singleton
+    @Named(TAG_AUTH_GEOAPIFY)
+    fun provideAuthGeoapifyInterceptor(): Interceptor = Interceptor { chain ->
+        val newUrl = chain.request().url().newBuilder()
+            .addQueryParameter("apiKey", BuildConfig.API_KEY_GEOAPIFY)
             .build()
 
         val newRequest = chain.request().newBuilder().url(newUrl).build()
@@ -147,18 +185,27 @@ class NetworkModule {
     @Named(TAG_BASE_URL_WEATHER)
     fun provideBaseURLWeather(): String = BuildConfig.API_ENDPOINT_WEATHER
 
+    @Provides
+    @Singleton
+    @Named(TAG_BASE_URL_GEOAPIFY)
+    fun provideBaseURLGeoapify(): String = BuildConfig.API_ENDPOINT_GEOAPIFY
+
     companion object {
         private const val TAG_LOGGING = "tag_logging"
         private const val TAG_AUTH = "tag_auth"
         private const val TAG_AUTH_WEATHER = "tag_auth_weather"
+        private const val TAG_AUTH_GEOAPIFY = "tag_auth_geoapify"
         private const val TAG_BASE_URL = "tag_base_url"
         private const val TAG_BASE_URL_WEATHER = "tag_base_url_weather"
+        private const val TAG_BASE_URL_GEOAPIFY = "tag_base_url_geoapify"
         private const val TAG_LANG = "tag_lang"
         private const val TAG_LANG_WEATHER = "tag_lang_weather"
         private const val TAG_METRIC = "tag_metric"
         private const val TAG_CLIENT_PLACES = "tag_client_places"
         private const val TAG_CLIENT_WEATHER = "tag_client_weather"
+        private const val TAG_CLIENT_GEOAPIFY = "tag_client_geoapify"
         private const val TAG_RETROFIT_WEATHER = "tag_retrofit_weather"
         private const val TAG_RETROFIT_PLACES = "tag_retrofit_places"
+        private const val TAG_RETROFIT_GEOAPIFY = "tag_retrofit_geoapify"
     }
 }

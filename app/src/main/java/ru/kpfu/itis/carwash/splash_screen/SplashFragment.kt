@@ -34,7 +34,8 @@ class SplashFragment : Fragment() {
     }
 
     private fun initSubscribes() {
-        with(viewModel) {
+        findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
+        /*with(viewModel) {
             user().observe(
                 viewLifecycleOwner,
                 {
@@ -47,6 +48,6 @@ class SplashFragment : Fragment() {
                     )
                 }
             )
-        }
+        }*/
     }
 }

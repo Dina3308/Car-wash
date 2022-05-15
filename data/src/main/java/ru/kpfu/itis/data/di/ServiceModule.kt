@@ -3,6 +3,7 @@ package ru.kpfu.itis.data.di
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
+import ru.kpfu.itis.data.api.geoapify.GeoapifyService
 import ru.kpfu.itis.data.api.places.PlacesService
 import ru.kpfu.itis.data.api.weather.WeatherService
 import javax.inject.Named
@@ -23,8 +24,15 @@ class ServiceModule {
         WeatherService::class.java
     )
 
+    @Provides
+    @Singleton
+    fun bindGeoapifyService(@Named(TAG_RETROFIT_GEOAPIFY)retrofit: Retrofit): GeoapifyService = retrofit.create(
+        GeoapifyService::class.java
+    )
+
     companion object {
         private const val TAG_RETROFIT_WEATHER = "tag_retrofit_weather"
         private const val TAG_RETROFIT_PLACES = "tag_retrofit_places"
+        private const val TAG_RETROFIT_GEOAPIFY = "tag_retrofit_geoapify"
     }
 }
