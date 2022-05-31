@@ -32,6 +32,8 @@ import javax.inject.Inject
 import com.yandex.mapkit.user_location.UserLocationLayer
 import ru.kpfu.itis.carwash.R
 import android.graphics.PointF
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.yandex.runtime.image.ImageProvider
 import ru.kpfu.itis.carwash.common.getBitmapFromVectorDrawable
 
@@ -112,38 +114,42 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
     private fun initSubscribes() {
         with(viewModel) {
             location().observe(
-                viewLifecycleOwner,
-                {
-                    initUserLocationLayer()
-                    binding.map.map.move(
-                        CameraPosition(Point(it.latitude, it.longitude), 12f, 0.0f, 0.0f),
-                        Animation(Animation.Type.SMOOTH, 0F),
-                        null
-                    )
-                }
-            )
+                viewLifecycleOwner
+            ) {
+                initUserLocationLayer()
+                binding.map.map.move(
+                    CameraPosition(Point(it.latitude, it.longitude), 12f, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 0F),
+                    null
+                )
+            }
 
             carWashes().observe(
-                viewLifecycleOwner,
-                {
-                    println(it)
-                    showMarkers(it)
-                }
-            )
+                viewLifecycleOwner
+            ) {
+                println(it)
+                showMarkers(it)
+            }
 
             progress().observe(
-                viewLifecycleOwner,
-                {
-                    binding.progressBar.isVisible = it
-                }
-            )
+                viewLifecycleOwner
+            ) {
+                binding.progressBar.isVisible = it
+            }
 
             showErrorEvent().observe(
-                viewLifecycleOwner,
-                {
-                    showToast(it.peekContent())
+                viewLifecycleOwner
+            ) {
+                showToast(it.peekContent())
+            }
+
+            carWash().observe(
+                viewLifecycleOwner
+            ) {
+                MapsFragmentDirections.actionMapsFragmentToBottomSheetFragment(it).also { nav ->
+                    findNavController().navigate(nav)
                 }
-            )
+            }
         }
     }
 
@@ -156,9 +162,9 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
                 ),
                 ImageProvider.fromBitmap(requireContext().getBitmapFromVectorDrawable(R.drawable.ic_location_))
             )
-            /*marker.addTapListener { mapObject, point ->
-
-            }*/
+            marker.addTapListener { _, point ->
+                viewModel.getCarWash(point.latitude, point.longitude)
+            }
         }
     }
 

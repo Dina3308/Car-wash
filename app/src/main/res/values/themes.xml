@@ -84,4 +84,19 @@
         <item name="tickMark">@null</item>
     </style>
 
+    <style name="MyRatingBar" parent="Theme.AppCompat">
+        <item name="colorControlActivated">#FFD700</item>
+        <item name="colorControlNormal">@color/quantum_grey400</item>
+    </style>
+    <style name="Chip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chips_state_list</item>
+        <item name="rippleColor">@null</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="chipStrokeWidth">0dp</item>
+    </style>
+
+    <style name="TextAppearance.Tab" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

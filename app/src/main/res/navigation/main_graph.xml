@@ -14,6 +14,9 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/mapsFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_mapsFragment_to_bottomSheetFragment"
+            app:destination="@id/bottomSheetFragment" />
     </fragment>
 
     <fragment
@@ -89,5 +92,13 @@
             app:popUpTo="@id/settingsFragment"
             app:popUpToInclusive="true"/>
     </fragment>
+    <dialog
+        android:id="@+id/bottomSheetFragment"
+        android:name="ru.kpfu.itis.carwash.map.BottomSheetFragment"
+        android:label="BottomSheetFragment" >
+        <argument
+            android:name="carWash"
+            app:argType="ru.kpfu.itis.carwash.map.model.CarWash" />
+    </dialog>
 
 </navigation>

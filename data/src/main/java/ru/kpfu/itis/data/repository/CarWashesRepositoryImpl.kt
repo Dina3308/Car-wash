@@ -1,6 +1,7 @@
 package ru.kpfu.itis.data.repository
 
 import ru.kpfu.itis.data.api.geoapify.GeoapifyService
+import ru.kpfu.itis.data.api.geoapify.PlaceResponse
 import ru.kpfu.itis.data.api.places.PlacesService
 import ru.kpfu.itis.data.db.dao.CarWashDao
 import ru.kpfu.itis.data.mappers.mapCarWashLocalToCarWash
@@ -18,7 +19,7 @@ class CarWashesRepositoryImpl(
 
     companion object {
         private const val PLACE_TYPE = "car_wash"
-        private const val RADIUS_IN_METERS = 10000
+        private const val RADIUS_IN_METERS = 100000
     }
 
     override suspend fun getNearbyCarWashes(lat: Double, long: Double): List<CarWash>? {

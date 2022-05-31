@@ -11,4 +11,10 @@ interface GeoapifyService {
         @Query("categories") categories: String,
         @Query("filter") filter: String,
     ): PlaceResponse
+
+    @GET("place-details")
+    suspend fun getPlaceDetails(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+    ): PlaceResponse
 }
