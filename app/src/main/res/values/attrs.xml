@@ -4,6 +4,7 @@
         <attr name="setLeftIcon" format="reference"/>
         <attr name="setRight1Icon" format="reference"/>
         <attr name="setRight2Icon" format="reference"/>
+        <attr name="setRightText" format="string"/>
         <attr name="setTitle" format="string"/>
     </declare-styleable>
 </resources>

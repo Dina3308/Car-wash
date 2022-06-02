@@ -19,7 +19,7 @@ class CarWashesRepositoryImpl(
 
     companion object {
         private const val PLACE_TYPE = "car_wash"
-        private const val RADIUS_IN_METERS = 100000
+        private const val RADIUS_IN_METERS = 3000
     }
 
     override suspend fun getNearbyCarWashes(lat: Double, long: Double): List<CarWash>? {

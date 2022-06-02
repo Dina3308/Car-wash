@@ -50,6 +50,7 @@ android {
     }
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 
 }
@@ -117,4 +118,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.3.5"
 
     implementation 'com.yandex.android:maps.mobile:4.0.0-lite'
+
+    implementation 'com.iarcuschin:simpleratingbar:0.1.5'
+
 }

@@ -80,6 +80,11 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_splashFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -99,6 +104,21 @@
         <argument
             android:name="carWash"
             app:argType="ru.kpfu.itis.carwash.map.model.CarWash" />
+        <action
+            android:id="@+id/action_bottomSheetFragment_to_sendReviewFragment"
+            app:destination="@id/sendReviewFragment" />
     </dialog>
 
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ru.kpfu.itis.carwash.map.HistoryFragment"
+        android:label="HistoryFragment" >
+        <action
+            android:id="@+id/action_historyFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sendReviewFragment"
+        android:name="ru.kpfu.itis.carwash.map.SendReviewFragment"
+        android:label="SendReviewFragment" />
 </navigation>

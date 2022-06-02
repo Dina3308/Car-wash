@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.R
 import javax.inject.Inject

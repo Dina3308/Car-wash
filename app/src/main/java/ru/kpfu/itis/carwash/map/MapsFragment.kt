@@ -32,6 +32,9 @@ import javax.inject.Inject
 import com.yandex.mapkit.user_location.UserLocationLayer
 import ru.kpfu.itis.carwash.R
 import android.graphics.PointF
+import android.view.Gravity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.yandex.runtime.image.ImageProvider
@@ -47,7 +50,6 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapKitFactory.setApiKey(BuildConfig.API_KEY_YANDEX_MAPS)
         MapKitFactory.initialize(context)
     }
 
@@ -69,6 +71,10 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
 
         initSubscribes()
         checkPermissions()
+        binding.navDraw.setOnClickListener {
+            val mDrawerLayout = requireActivity().findViewById(R.id.drawer_layout) as DrawerLayout
+            mDrawerLayout.openDrawer(GravityCompat.START)
+        }
     }
 
     override fun onStop() {

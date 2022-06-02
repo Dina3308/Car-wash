@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import ru.kpfu.itis.carwash.R
 import ru.kpfu.itis.carwash.databinding.FragmentReviewsBinding
 import ru.kpfu.itis.carwash.map.model.Review
@@ -38,16 +39,10 @@ class ReviewsFragment : Fragment() {
                 rating = 4,
                 time = "3 года назад",
             ),
-            Review(
-                fullName = "Альбер Нуриев",
-                review = "Это Мойка Просто Класс!!)) И мойка Не Дорого Комплекс и Химчтстка Хорошая авто!)",
-                rating = 5,
-                time = "3 года назад",
-            ),
         )
         binding.rv.adapter = ReviewsAdapter(reviews)
         binding.btn.setOnClickListener {
-
+            findNavController().navigate(R.id.action_bottomSheetFragment_to_sendReviewFragment)
         }
     }
 }

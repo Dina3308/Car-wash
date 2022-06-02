@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import dagger.BindsInstance
 import dagger.Subcomponent
 import ru.kpfu.itis.carwash.di.ScreenScope
+import ru.kpfu.itis.carwash.map.HistoryFragment
 import ru.kpfu.itis.carwash.map.MapsFragment
 
 @Subcomponent(
@@ -23,4 +24,5 @@ interface MapsComponent {
     }
 
     fun inject(mapsFragment: MapsFragment)
+    fun inject(historyFragment: HistoryFragment)
 }
