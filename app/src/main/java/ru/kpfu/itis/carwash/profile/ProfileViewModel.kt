@@ -27,7 +27,7 @@ class ProfileViewModel @Inject constructor(
 
     companion object {
         private const val LEVEL_OF_CAR_POLLUTION = 15
-        private const val MATCH_FOR_DATE = "dd MMMM, EE"
+        private const val MATCH_FOR_DATE = "EE, dd MMMM"
         private const val MATCH_FOR_DATE_PICKER = "MM/dd/yyyy"
     }
 

@@ -17,7 +17,7 @@ class AuthInteractor(
         }
     }
 
-    suspend fun login(email: String, password: String): Result<Unit> {
+    suspend fun login(email: String, password: String): Result<Boolean> {
         return runCatching {
             authRepository.login(email, password)
         }

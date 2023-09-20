@@ -40,10 +40,6 @@ class MyToolbar @JvmOverloads constructor(
             val right2Icon = typedArray.getDrawable(R.styleable.MyToolbar_setRight2Icon)
             right2Icon?.let { setRight2Icon(it) }
 
-            val rightText = typedArray.getString(R.styleable.MyToolbar_setRightText)
-            rightText?.let {
-                setTextBtn(it)
-            }
             val title = typedArray.getString(R.styleable.MyToolbar_setTitle)
             title?.let { setTitle(it) }
 
@@ -53,10 +49,6 @@ class MyToolbar @JvmOverloads constructor(
 
     fun setTitle(title: String) {
         binding.title.text = title
-    }
-
-    fun setTextBtn(title: String) {
-        binding.textBtn.text = title
     }
 
     fun setLeftIcon(icon: Drawable) {
@@ -76,12 +68,6 @@ class MyToolbar @JvmOverloads constructor(
 
     fun leftIconClickListener(itemClick: (View) -> Unit) {
         binding.leftIcon.setOnClickListener {
-            it?.also(itemClick)
-        }
-    }
-
-    fun textButtonClickListener(itemClick: (View) -> Unit) {
-        binding.textBtn.setOnClickListener {
             it?.also(itemClick)
         }
     }

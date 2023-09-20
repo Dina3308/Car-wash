@@ -4,8 +4,7 @@ import java.util.*
 
 data class UserEntity(
     val address: String?,
-    val lat: Double?,
-    val lon: Double?,
+    val location: Pair<Double?, Double?>,
     val date: Date?,
     val levelOfCarPollution: Int?
 )

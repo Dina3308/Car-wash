@@ -24,7 +24,7 @@
     <string name="carwash_btn">Перейти к автомойкам</string>
     <string name="yes_car_wash">Определенно, сегодня стоит потратиться на мойку своей малышки</string>
     <string name="no_car_wash">В ближайшие дни ожидаются осадки</string>
-    <string name="day_car_wash">Рекомендуется помыть машину %s</string>
+    <string name="day_car_wash">Предлагаю помыть машину в %s</string>
     <string name="choose_date">Выберите дату</string>
     <string name="url_for_upload">https://openweathermap.org/img/wn/%s@2x.png</string>
     <string name="date_picker_tag">datePicker</string>

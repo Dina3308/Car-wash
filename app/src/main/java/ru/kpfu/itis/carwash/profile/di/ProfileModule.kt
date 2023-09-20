@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
-import ru.kpfu.itis.carwash.common.ResourceManager
 import ru.kpfu.itis.carwash.di.ViewModelKey
 import ru.kpfu.itis.carwash.di.ViewModelModule
 import ru.kpfu.itis.carwash.profile.ProfileViewModel
@@ -19,10 +17,8 @@ class ProfileModule {
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)
     fun provideViewModel(
-        interactor: ProfileInteractor,
-        resourceManager: ResourceManager,
-        networkConnectionUtil: NetworkConnectionUtil
-    ): ViewModel = ProfileViewModel(interactor, resourceManager, networkConnectionUtil)
+        interactor: ProfileInteractor
+    ): ViewModel = ProfileViewModel(interactor)
 
     @Provides
     fun provideViewModelCreator(fragment: Fragment, viewModelFactory: ViewModelProvider.Factory): ProfileViewModel =

@@ -12,8 +12,7 @@ fun mapDocumentSnapShotToUserEntity(document: DocumentSnapshot): UserEntity {
     return with(document) {
         UserEntity(
             getString(ADDRESS_FIELD),
-            getGeoPoint(LOCATION_FIELD)?.latitude,
-            getGeoPoint(LOCATION_FIELD)?.longitude,
+            Pair(getGeoPoint(LOCATION_FIELD)?.latitude, getGeoPoint(LOCATION_FIELD)?.longitude),
             getDate(DATE_FIELD),
             getLong(LEVEL_OF_CAR_POLLUTION_FIELD)?.toInt()
         )

@@ -1,5 +1,6 @@
 package ru.kpfu.itis.carwash.auth
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,12 @@ import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuthException
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.R
-import ru.kpfu.itis.carwash.auth.model.LoginForm
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.isValidEmail
+import ru.kpfu.itis.carwash.common.isValidPassword
 import ru.kpfu.itis.carwash.common.makeLinks
 import ru.kpfu.itis.carwash.databinding.SignInFragmentBinding
 import javax.inject.Inject
@@ -28,25 +32,29 @@ class SignInFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_in_fragment, container, false)
+        initLoginClickListener()
+        initSubscribes()
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         (activity?.application as App).appComponent.signInComponentFactory()
             .create(this)
             .inject(this)
-
-        initLoginClickListener()
-        initSubscribes()
     }
 
     private fun initSubscribes() {
         viewModel.login().observe(
             viewLifecycleOwner,
             {
-                findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
+                try {
+                    it.getOrThrow().run {
+                        findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
+                    }
+                } catch (ex: FirebaseAuthException) {
+                    showToast(resources.getString(R.string.sign_in_err))
+                }
             }
         )
 
@@ -56,19 +64,24 @@ class SignInFragment : Fragment() {
                 binding.progressBar.isVisible = it
             }
         )
-
-        viewModel.showErrorEvent().observe(
-            viewLifecycleOwner,
-            {
-                showToast(it.peekContent())
-            }
-        )
     }
 
     private fun initLoginClickListener() {
         binding.signInBtn.setOnClickListener {
             with(binding) {
-                viewModel.login(LoginForm(emailEdit.text.toString(), passwordEdit.text.toString()))
+                val email = emailEdit.text.toString()
+                val password = passwordEdit.text.toString()
+
+                emailEdit.isValidEmail(email)
+                passwordEdit.isValidPassword(password)
+
+                if (emailEdit.error == null && passwordEdit.error == null) {
+                    if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                        viewModel.login(email, password)
+                    } else {
+                        showToast(resources.getString(R.string.no_interner))
+                    }
+                }
             }
         }
 

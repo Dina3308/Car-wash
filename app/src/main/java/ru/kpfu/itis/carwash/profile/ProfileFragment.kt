@@ -1,6 +1,7 @@
 package ru.kpfu.itis.carwash.profile
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,10 +26,14 @@ import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListenerAdapter
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.R
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.dateFormatter
+import ru.kpfu.itis.carwash.common.setDate
 import ru.kpfu.itis.carwash.databinding.DialogUpdateLevelOfCarPollutionBinding
 import ru.kpfu.itis.carwash.databinding.HomeFragmentBinding
 import ru.kpfu.itis.carwash.profile.model.CurrentWeatherDetails
 import ru.kpfu.itis.carwash.profile.workManager.DailyWeatherCheckWorker
+import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -36,6 +41,7 @@ import javax.inject.Inject
 class ProfileFragment : Fragment() {
 
     companion object {
+        private const val LEVEL_OF_CAR_POLLUTION = 15
         private const val REPEAT_INTERVAL = 1L
     }
     @Inject
@@ -48,20 +54,19 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        (activity?.application as App).appComponent.homeComponentFactory()
-            .create(this)
-            .inject(this)
-
         initSubscribes()
         initClickListener()
         initWorkManager()
         initSeekBar()
+        return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity?.application as App).appComponent.homeComponentFactory()
+            .create(this)
+            .inject(this)
     }
 
     private fun initSubscribes() {
@@ -76,60 +81,85 @@ class ProfileFragment : Fragment() {
             signOut().observe(
                 viewLifecycleOwner,
                 {
-                    findNavController().navigate(R.id.action_homeFragment_to_signInFragment)
+                    if (it) {
+                        findNavController().navigate(R.id.action_homeFragment_to_signInFragment)
+                    }
                 }
             )
 
             date().observe(
                 viewLifecycleOwner,
-                {
-                    binding.dateEdit.setText(it.getContentIfNotHandled())
+                { result ->
+                    result.getOrNull()?.also {
+                        binding.dateEdit.dateFormatter(it)
+                    }
                 }
             )
 
             user().observe(
                 viewLifecycleOwner,
-                {
-                    binding.dateEdit.setText(it.date)
-                    showWeather(it.lat, it.lon)
-                    getDateCarWash(it.lat, it.lon)
-                    binding.seekBar.setProgress(it.levelOfCarPollution)
+                { result ->
+                    result.getOrNull()?.also {
+                        it.date.run {
+                            if (this != null) {
+                                binding.dateEdit.dateFormatter(this)
+                            } else {
+                                binding.dateEdit.setText(resources.getString(R.string.choose_date))
+                            }
+                        }
+                        val lat = it.location.first
+                        val lon = it.location.second
+                        if (lat != null && lon != null) {
+                            showWeather(lat, lon)
+                        }
+                        it.levelOfCarPollution?.run {
+                            if (this > LEVEL_OF_CAR_POLLUTION) {
+                                binding.seekBar.setProgress(LEVEL_OF_CAR_POLLUTION.toFloat())
+                            } else {
+                                binding.seekBar.setProgress(this.toFloat())
+                            }
+                        }
+                        if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                            getDateCarWash(it.location)
+                        }
+                    }
                 }
             )
 
             weather().observe(
                 viewLifecycleOwner,
-                {
-                    setWeather(it)
+                { result ->
+                    try {
+                        result.getOrThrow().also {
+                            setWeather(it)
+                        }
+                    } catch (ex: UnknownHostException) {
+                        showToast(resources.getString(R.string.no_interner))
+                    }
                 }
             )
 
             dateCarWash().observe(
                 viewLifecycleOwner,
-                {
-                    binding.notificationCarWashTv.text = it.getContentIfNotHandled()
-                    binding.notificationCarWashCv.visibility = View.VISIBLE
+                { result ->
+                    result.getOrNull().let {
+                        if (it != null) {
+                            binding.notificationCarWashTv.setDate(it, R.string.day_car_wash)
+                        } else {
+                            binding.notificationCarWashTv.text =
+                                resources.getString(R.string.no_car_wash)
+                        }
+                        binding.notificationCarWashCv.visibility = View.VISIBLE
+                    }
                 }
             )
 
             levelOfCarPollution().observe(
                 viewLifecycleOwner,
-                {
-                    binding.seekBar.setProgress(it)
-                }
-            )
-
-            showDialogEvent().observe(
-                viewLifecycleOwner,
-                {
-                    showAlterDialog()
-                }
-            )
-
-            showErrorEvent().observe(
-                viewLifecycleOwner,
-                {
-                    showToast(it.peekContent())
+                { result ->
+                    result.getOrNull()?.let {
+                        binding.seekBar.setProgress(it.toFloat())
+                    }
                 }
             )
         }
@@ -187,7 +217,11 @@ class ProfileFragment : Fragment() {
                 progress: Int,
                 progressFloat: Float
             ) {
-                viewModel.updateLevelOfCarPollution(progress)
+                if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                    viewModel.updateLevelOfCarPollution(progress.toLong())
+                } else {
+                    showToast(resources.getString(R.string.no_interner))
+                }
             }
         }
     }
@@ -206,7 +240,16 @@ class ProfileFragment : Fragment() {
             .build()
 
         datePicker.addOnPositiveButtonClickListener {
-            viewModel.updateDate(Date(it))
+            if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                if (compareDates(Date(it))) {
+                    viewModel.updateLevelOfCarPollution(0)
+                } else {
+                    showAlterDialog()
+                }
+                viewModel.setDate(Date(it))
+            } else {
+                showToast(resources.getString(R.string.no_interner))
+            }
         }
 
         datePicker.show(childFragmentManager, resources.getString(R.string.date_picker_tag))
@@ -215,7 +258,7 @@ class ProfileFragment : Fragment() {
     private fun setWeather(weather: CurrentWeatherDetails) {
         with(binding) {
             currentCityTv.text = weather.name
-            currentDateTv.text = weather.date
+            currentDateTv.setDate(Calendar.getInstance().time)
             tempTv.text = getString(R.string.temp_tv, weather.temp.toInt())
             maxMinTv.text = getString(
                 R.string.max_min_tv,
@@ -237,6 +280,17 @@ class ProfileFragment : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
+    private fun compareDates(date: Date): Boolean {
+        val today = Calendar.getInstance()
+        val dateLastCarWash = Calendar.getInstance().also {
+            it.time = date
+        }
+        if (today.get(Calendar.YEAR) == dateLastCarWash.get(Calendar.YEAR) && today.get(Calendar.MONTH) == dateLastCarWash.get(Calendar.MONTH) && today.get(Calendar.DAY_OF_MONTH) == dateLastCarWash.get(Calendar.DAY_OF_MONTH)) {
+            return true
+        }
+        return false
+    }
+
     private fun showAlterDialog() {
         val alertDialog: AlertDialog? = activity?.let {
             val builder = AlertDialog.Builder(it)
@@ -248,7 +302,7 @@ class ProfileFragment : Fragment() {
                 setPositiveButton(
                     R.string.ok,
                     DialogInterface.OnClickListener { dialog, id ->
-                        viewModel.updateLevelOfCarPollution(bindingDialog.slider.value.toInt())
+                        viewModel.updateLevelOfCarPollution(bindingDialog.slider.value.toLong())
                     }
                 )
             }

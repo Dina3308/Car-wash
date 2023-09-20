@@ -1,6 +1,7 @@
 package ru.kpfu.itis.carwash.auth
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,10 +17,14 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.firebase.auth.FirebaseAuthException
 import ru.kpfu.itis.carwash.App
 import ru.kpfu.itis.carwash.BuildConfig
 import ru.kpfu.itis.carwash.R
-import ru.kpfu.itis.carwash.auth.model.RegisterForm
+import ru.kpfu.itis.carwash.common.NetworkConnectionUtil
+import ru.kpfu.itis.carwash.common.isChosenCity
+import ru.kpfu.itis.carwash.common.isValidEmail
+import ru.kpfu.itis.carwash.common.isValidPassword
 import ru.kpfu.itis.carwash.common.makeLinks
 import ru.kpfu.itis.carwash.databinding.SignUpFragmentBinding
 import java.util.*
@@ -33,7 +38,7 @@ class SignUpFragment : Fragment() {
     @Inject
     lateinit var viewModel: AuthViewModel
     private lateinit var binding: SignUpFragmentBinding
-    private var place: Place? = null
+    private lateinit var place: Place
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,18 +46,16 @@ class SignUpFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_up_fragment, container, false)
+        initRegisterClickListener()
+        initSubscribes()
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         (activity?.application as App).appComponent.signUpComponentFactory()
             .create(this)
             .inject(this)
-
-        initRegisterClickListener()
-        initSubscribes()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +90,12 @@ class SignUpFragment : Fragment() {
         viewModel.register().observe(
             viewLifecycleOwner,
             {
-                findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
+                try {
+                    it.getOrThrow()
+                    findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
+                } catch (ex: FirebaseAuthException) {
+                    showToast(resources.getString(R.string.email_is_exists))
+                }
             }
         )
 
@@ -95,13 +103,6 @@ class SignUpFragment : Fragment() {
             viewLifecycleOwner,
             {
                 binding.progressBar.isVisible = it
-            }
-        )
-
-        viewModel.showErrorEvent().observe(
-            viewLifecycleOwner,
-            {
-                showToast(it.peekContent())
             }
         )
     }
@@ -115,7 +116,20 @@ class SignUpFragment : Fragment() {
                 val passwordRepeat = passwordRepeatEdit.text.toString()
                 val city = searchCityEdit.text.toString()
 
-                viewModel.register(RegisterForm(email, password, passwordRepeat, city), place)
+                emailEdit.isValidEmail(email)
+                passwordEdit.isValidPassword(password)
+                passwordRepeatEdit.isValidPassword(passwordRepeat, password)
+                searchCityEdit.isChosenCity(city)
+
+                if (emailEdit.error == null && passwordEdit.error == null && passwordRepeatEdit.error == null &&
+                    searchCityEdit.error == null
+                ) {
+                    if (NetworkConnectionUtil.isConnected(activity?.applicationContext)) {
+                        viewModel.register(email, password, place)
+                    } else {
+                        showToast(resources.getString(R.string.no_interner))
+                    }
+                }
             }
         }
 

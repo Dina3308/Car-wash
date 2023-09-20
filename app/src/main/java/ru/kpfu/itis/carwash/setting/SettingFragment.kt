@@ -1,12 +1,12 @@
 package ru.kpfu.itis.carwash.setting
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,9 +25,6 @@ import javax.inject.Inject
 
 class SettingFragment : Fragment() {
 
-    companion object {
-        private const val AUTOCOMPLETE_REQUEST_CODE = 45
-    }
     @Inject
     lateinit var viewModel: SettingViewModel
     private lateinit var binding: FragmentSettingsBinding
@@ -38,18 +35,16 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false)
+        initClickListener()
+        initSubscribes()
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         (activity?.application as App).appComponent.settingComponentFactory()
             .create(this)
             .inject(this)
-
-        initClickListener()
-        initSubscribes()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -99,20 +94,24 @@ class SettingFragment : Fragment() {
             cityAddress().observe(
                 viewLifecycleOwner,
                 {
-                    binding.cityTv.text = it
+                    it.getOrNull()?.run {
+                        binding.cityTv.text = getString(R.string.choose_city, this)
+                    }
                 }
             )
 
-            showErrorEvent().observe(
+            city().observe(
                 viewLifecycleOwner,
                 {
-                    showToast(it.peekContent())
+                    it.getOrNull()?.run {
+                        binding.cityTv.text = getString(R.string.choose_city, address)
+                    }
                 }
             )
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    companion object {
+        private const val AUTOCOMPLETE_REQUEST_CODE = 45
     }
 }
